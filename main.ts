@@ -83,17 +83,15 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     )
 })
 function render_walls () {
-    for (let column = 0; column <= 17; column++) {
-        for (let row = 0; row <= 17; row++) {
-            if (tiles.tileAtLocationIsWall(tiles.getTileLocation(column, row))) {
-                tiles.setTileAt(tiles.getTileLocation(column, row), sprites.builtin.brick)
-            } else if (tiles.tileAtLocationEquals(tiles.getTileLocation(column, row), assets.tile`Stairs down`)) {
-                tiles.placeOnTile(Wizard, tiles.getTileLocation(column, row))
-            } else if (tiles.tileAtLocationEquals(tiles.getTileLocation(column, row), sprites.dungeon.doorClosedNorth)) {
-                tiles.setWallAt(tiles.getTileLocation(column, row), true)
-            }
+    tileUtil.forEachTileInMap(tileUtil.currentTilemap(), function (column, row, location) {
+        if (tiles.tileAtLocationIsWall(location)) {
+            tiles.setTileAt(location, sprites.builtin.brick)
+        } else if (tiles.tileAtLocationEquals(location, assets.tile`Stairs down`)) {
+            tiles.placeOnTile(Wizard, location)
+        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth)) {
+            tiles.setWallAt(location, true)
         }
-    }
+    })
 }
 function create_wizard () {
     wiz = sprites.create(assets.image`Wiz`, SpriteKind.Player)
@@ -104,6 +102,14 @@ function create_wizard () {
     Magic = 0
     scene.cameraFollowSprite(wiz)
     return wiz
+}
+function create_label (Icon: Image, Y: number) {
+    label = textsprite.create("x0", 0, 1)
+    label.setOutline(1, 6)
+    label.top = Y
+    label.left = 0
+    label.setIcon(Icon)
+    return label
 }
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     animation.stopAnimation(animation.AnimationTypes.All, Wizard)
@@ -363,6 +369,7 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, fu
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLarge, function (sprite, location) {
     game.gameOver(true)
 })
+let label: TextSprite = null
 let Magic = 0
 let wiz: Sprite = null
 let Keys = 0
@@ -370,3 +377,41 @@ let Wizard: Sprite = null
 tiles.setCurrentTilemap(tilemap`level1`)
 Wizard = create_wizard()
 render_walls()
+let coin_label = create_label(img`
+    . . b b b b . . 
+    . b 5 5 5 5 b . 
+    b 5 d 3 3 d 5 b 
+    b 5 3 5 5 1 5 b 
+    c 5 3 5 5 1 d c 
+    c d d 1 1 d d c 
+    . f d d d d f . 
+    . . f f f f . . 
+    `, 160)
+let key_label = create_label(img`
+    . b b d d b b . 
+    b 1 1 3 3 1 1 b 
+    b 1 3 5 5 3 1 b 
+    b d 3 5 5 3 d b 
+    c 1 1 d d 1 1 c 
+    c d 1 d d 1 d c 
+    . c c 7 6 c c . 
+    . . 6 7 6 . . . 
+    . . 6 6 8 8 8 6 
+    . . 6 8 7 7 7 6 
+    . . 8 7 7 7 6 . 
+    . . 8 8 8 6 . . 
+    `, 175)
+let magic_label = create_label(img`
+    . . . . . 3 3 . . . . . 
+    . . . . 3 1 1 3 . . . . 
+    . . . . 3 1 1 3 . . . . 
+    3 2 2 3 1 1 1 1 3 2 2 . 
+    3 3 1 1 1 1 1 1 1 1 3 3 
+    3 3 1 1 1 1 1 1 1 1 3 3 
+    . 3 1 1 1 1 1 1 1 1 3 . 
+    . . 3 1 1 1 1 1 1 3 . . 
+    . . 2 1 1 1 1 1 1 2 . . 
+    . . 2 1 1 3 3 1 1 2 . . 
+    . . 3 3 3 2 2 2 3 3 . . 
+    . . . . . . . . . . . . 
+    `, 190)
