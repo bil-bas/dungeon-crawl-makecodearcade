@@ -21,9 +21,6 @@ function create_wizard () {
     wiz = sprites.create(assets.image`Wiz`, SpriteKind.Player)
     controller.moveSprite(wiz, 60, 60)
     info.setLife(3)
-    info.setScore(0)
-    Keys = 0
-    Magic = 0
     scene.cameraFollowSprite(wiz)
     characterAnimations.loopFrames(
     wiz,
@@ -326,8 +323,8 @@ function create_wizard () {
 function create_label (Icon: Image, Y: number) {
     label = textsprite.create("x0", 0, 1)
     label.setOutline(1, 6)
-    label.top = Y
-    label.left = 0
+    label.top = 0
+    label.left = Y
     label.setIcon(Icon)
     return label
 }
@@ -338,9 +335,15 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleBlueCrystal, f
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.chestClosed, function (sprite, location) {
     tiles.setTileAt(location, sprites.dungeon.chestOpen)
-    info.changeScoreBy(10)
     music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
+    coins += 10
+    update_labels()
 })
+function update_labels () {
+    magic_label.setText("x" + Magic)
+    key_label.setText("x" + Keys)
+    coin_label.setText("x" + coins)
+}
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
@@ -351,40 +354,34 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLarge, function (spr
 })
 let label: TextSprite = null
 let wiz: Sprite = null
+let coin_label: TextSprite = null
+let magic_label: TextSprite = null
+let key_label: TextSprite = null
 let Keys = 0
 let Magic = 0
+let coins = 0
 let Wizard: Sprite = null
 tiles.setCurrentTilemap(tilemap`level1`)
 Wizard = create_wizard()
 render_walls()
-let coins = 0
-Magic = 0
+coins = 0
+Magic = 2
 Keys = 0
-let coin_label = create_label(img`
-    . . b b b b . . 
-    . b 5 5 5 5 b . 
-    b 5 d 3 3 d 5 b 
-    b 5 3 5 5 1 5 b 
-    c 5 3 5 5 1 d c 
-    c d d 1 1 d d c 
-    . f d d d d f . 
-    . . f f f f . . 
+key_label = create_label(img`
+    . . . . c c c c . . . . 
+    . . . c c c c c c . . . 
+    . . . c c . . c c . . . 
+    . . . c c . . c c . . . 
+    . . . c c . . c c . . . 
+    . . . c c c c c c . . . 
+    . . . . c c c c . . . . 
+    . . . . . c c . . . . . 
+    . . . . . c c . . . . . 
+    . . . . . c c c c . . . 
+    . . . . . c c . . . . . 
+    . . . . . c c c . . . . 
     `, 160)
-let key_label = create_label(img`
-    . b b d d b b . 
-    b 1 1 3 3 1 1 b 
-    b 1 3 5 5 3 1 b 
-    b d 3 5 5 3 d b 
-    c 1 1 d d 1 1 c 
-    c d 1 d d 1 d c 
-    . c c 7 6 c c . 
-    . . 6 7 6 . . . 
-    . . 6 6 8 8 8 6 
-    . . 6 8 7 7 7 6 
-    . . 8 7 7 7 6 . 
-    . . 8 8 8 6 . . 
-    `, 175)
-let magic_label = create_label(img`
+magic_label = create_label(img`
     . . . . . 3 3 . . . . . 
     . . . . 3 1 1 3 . . . . 
     . . . . 3 1 1 3 . . . . 
@@ -398,3 +395,18 @@ let magic_label = create_label(img`
     . . 3 3 3 2 2 2 3 3 . . 
     . . . . . . . . . . . . 
     `, 190)
+coin_label = create_label(img`
+    . . . . . . . . . . . . 
+    . . . . . . . . . . . . 
+    . . . . b b b b . . . . 
+    . . . b 5 5 5 5 b . . . 
+    . . b 5 d 3 3 d 5 b . . 
+    . . b 5 3 5 5 1 5 b . . 
+    . . c 5 3 5 5 1 d c . . 
+    . . c d d 1 1 d d c . . 
+    . . . f d d d d f . . . 
+    . . . . . . . . . . . . 
+    . . . . . . . . . . . . 
+    . . . . . . . . . . . . 
+    `, 220)
+update_labels()
