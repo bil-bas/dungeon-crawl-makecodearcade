@@ -442,7 +442,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 `, Wizard, 0, -100)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown))) {
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingDown)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
