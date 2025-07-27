@@ -5,7 +5,8 @@
         "device": "*",
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
         "Timers": "github:microsoft/arcade-timers#v1.1.0",
-        "arcade-tile-util": "github:microsoft/arcade-tile-util#v1.2.0"
+        "arcade-tile-util": "github:microsoft/arcade-tile-util#v1.2.0",
+        "arcade-character-animations": "github:microsoft/arcade-character-animations#v0.0.2"
     },
     "files": [
         "main.blocks",
