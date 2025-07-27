@@ -385,7 +385,7 @@ function create_label (Icon: Image, Y: number) {
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Magic) {
-        if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingRight))) {
+        if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingRight)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingRight))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -403,8 +403,8 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, Wizard, 70, 0)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingLeft))) {
+                `, Wizard, 100, 0)
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingLeft)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingLeft))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -422,8 +422,8 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, Wizard, -70, 0)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingUp))) {
+                `, Wizard, -100, 0)
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingUp)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingUp))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -441,8 +441,8 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . 3 1 3 . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, Wizard, 0, 70)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown))) {
+                `, Wizard, 0, -100)
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -460,7 +460,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . 2 1 1 1 1 2 . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, Wizard, 0, -70)
+                `, Wizard, 0, 100)
         }
         projectile.startEffect(effects.trail)
         Magic += -1
