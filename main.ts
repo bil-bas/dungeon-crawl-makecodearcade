@@ -36,6 +36,7 @@ function render_walls () {
                 `, SpriteKind.Enemy)
             tiles.placeOnTile(mySprite, location)
             mySprite.vx = 40
+            mySprite.setFlag(SpriteFlag.BounceOnWall, true)
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object6)) {
             tiles.setTileAt(location, assets.tile`transparency16`)
             mySprite = sprites.create(img`
@@ -66,6 +67,7 @@ function render_walls () {
                 `, SpriteKind.Enemy)
             tiles.placeOnTile(mySprite, location)
             mySprite.vy = 40
+            mySprite.setFlag(SpriteFlag.BounceOnWall, true)
         }
     })
 }
@@ -374,12 +376,97 @@ function create_wizard () {
 }
 function create_label (Icon: Image, Y: number) {
     label = textsprite.create("x0", 0, 1)
+    label.setIcon(Icon)
     label.setOutline(1, 6)
+    label.setFlag(SpriteFlag.RelativeToCamera, true)
     label.top = 0
     label.left = Y
-    label.setIcon(Icon)
     return label
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Magic) {
+        if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingRight))) {
+            projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . 2 2 2 2 . . . 
+                . . . . . . . 2 2 1 1 1 1 2 . . 
+                . . . . 2 2 3 3 1 1 1 1 1 1 . . 
+                . . 3 3 3 3 1 1 1 1 1 1 1 1 . . 
+                . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+                . . 3 3 2 2 3 1 1 1 1 1 1 1 . . 
+                . . . . . . 2 2 3 1 1 1 1 2 . . 
+                . . . . . . . . . 2 2 2 2 . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, Wizard, 70, 0)
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingLeft))) {
+            projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . 2 2 2 2 . . . . . . . . . 
+                . . 2 1 1 1 1 2 2 . . . . . . . 
+                . . 1 1 1 1 1 1 3 3 2 2 . . . . 
+                . . 1 1 1 1 1 1 1 1 3 3 3 3 . . 
+                . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+                . . 1 1 1 1 1 1 1 3 2 2 3 3 . . 
+                . . 2 1 1 1 1 3 2 2 . . . . . . 
+                . . . 2 2 2 2 . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, Wizard, -70, 0)
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingUp))) {
+            projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . 2 1 1 1 1 2 . . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . . 3 1 1 1 1 2 . . . . . 
+                . . . . . 2 1 1 1 3 2 . . . . . 
+                . . . . . 2 3 1 1 3 . . . . . . 
+                . . . . . . 2 1 3 2 . . . . . . 
+                . . . . . . 2 1 3 2 . . . . . . 
+                . . . . . . 3 1 3 . . . . . . . 
+                . . . . . . 3 1 3 . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, Wizard, 0, 70)
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown))) {
+            projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . 3 1 3 . . . . . . . 
+                . . . . . . 3 1 3 . . . . . . . 
+                . . . . . . 2 1 3 2 . . . . . . 
+                . . . . . . 2 1 3 2 . . . . . . 
+                . . . . . 2 3 1 1 3 . . . . . . 
+                . . . . . 2 1 1 1 3 2 . . . . . 
+                . . . . . 3 1 1 1 1 2 . . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . 2 1 1 1 1 1 1 2 . . . . 
+                . . . . . 2 1 1 1 1 2 . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, Wizard, 0, -70)
+        }
+        projectile.startEffect(effects.trail)
+        Magic += -1
+        update_labels()
+    }
+})
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleBlueCrystal, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
@@ -390,10 +477,6 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.chestClosed, function (sp
     music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
     coins += 10
     update_labels()
-})
-scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
-    sprite.vx = sprite.vx * -1
-    sprite.vy = sprite.vy * -1
 })
 function update_labels () {
     magic_label.setText("x" + Magic)
@@ -408,6 +491,20 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, fu
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLarge, function (sprite, location) {
     game.gameOver(true)
 })
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    if (true) {
+    	
+    } else {
+    	
+    }
+    sprites.destroy(otherSprite)
+    info.changeLifeBy(-1)
+})
+let projectile: Sprite = null
 let label: TextSprite = null
 let wiz: Sprite = null
 let mySprite: Sprite = null
@@ -422,22 +519,22 @@ tiles.setCurrentTilemap(tilemap`level1`)
 Wizard = create_wizard()
 render_walls()
 coins = 0
-Magic = 2
+Magic = 3
 Keys = 0
 key_label = create_label(img`
     . . . . c c c c . . . . 
-    . . . c c c c c c . . . 
-    . . . c c . . c c . . . 
-    . . . c c . . c c . . . 
-    . . . c c . . c c . . . 
-    . . . c c c c c c . . . 
-    . . . . c c c c . . . . 
-    . . . . . c c . . . . . 
-    . . . . . c c . . . . . 
-    . . . . . c c c c . . . 
-    . . . . . c c . . . . . 
-    . . . . . c c c . . . . 
-    `, 160)
+    . . . c 5 5 5 5 c . . . 
+    . . . c 5 c c 5 c . . . 
+    . . . c 5 c c 5 c . . . 
+    . . . c 5 c c 5 c . . . 
+    . . . c 5 5 5 5 c . . . 
+    . . . . c 5 c c . . . . 
+    . . . . . 5 c . . . . . 
+    . . . . . 5 c . . . . . 
+    . . . . . 5 c 5 5 . . . 
+    . . . . . 5 c c c . . . 
+    . . . . . 5 c 5 . . . . 
+    `, 85)
 magic_label = create_label(img`
     . . . . . 3 3 . . . . . 
     . . . . 3 1 1 3 . . . . 
@@ -451,7 +548,7 @@ magic_label = create_label(img`
     . . 2 1 1 3 3 1 1 2 . . 
     . . 3 3 3 2 2 2 3 3 . . 
     . . . . . . . . . . . . 
-    `, 190)
+    `, 55)
 coin_label = create_label(img`
     . . . . . . . . . . . . 
     . . . . . . . . . . . . 
@@ -465,5 +562,5 @@ coin_label = create_label(img`
     . . . . . . . . . . . . 
     . . . . . . . . . . . . 
     . . . . . . . . . . . . 
-    `, 220)
+    `, 115)
 update_labels()
