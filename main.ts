@@ -1,6 +1,6 @@
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
-        tiles.setTileAt(location, sprites.dungeon.doorOpenNorth)
+        tiles.setTileAt(location, assets.tile`transparency16`)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
         tiles.setWallAt(location, false)
         Keys += -1
@@ -12,6 +12,7 @@ function render_walls () {
             tiles.setTileAt(location, sprites.builtin.brick)
         } else if (tiles.tileAtLocationEquals(location, assets.tile`Stairs down`)) {
             tiles.placeOnTile(Wizard, location)
+            tiles.setTileAt(location, assets.tile`transparency16`)
         } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth)) {
             tiles.setWallAt(location, true)
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object4)) {
@@ -575,13 +576,14 @@ function update_labels () {
     key_label.setText("x" + Keys)
     coin_label.setText("x" + coins)
 }
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function (sprite, location) {
+    game.gameOver(true)
+})
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     Magic += 1
-})
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLarge, function (sprite, location) {
-    game.gameOver(true)
+    update_labels()
 })
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
     sprites.destroy(sprite)
@@ -593,6 +595,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     } else {
     	
     }
+    music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite)
     info.changeLifeBy(-1)
 })

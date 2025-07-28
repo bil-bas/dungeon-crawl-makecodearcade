@@ -167,6 +167,27 @@ def create_wizard():
         characterAnimations.rule(Predicate.MOVING_UP))
     characterAnimations.loop_frames(wiz,
         [img("""
+            . . . . . . c c c . . . . . . .
+            . . . . . . c 5 b c . . . . . .
+            . . . . c c c 5 5 c c c . . . .
+            . . c c c c 5 5 5 5 c b c c . .
+            . c b b 5 b 5 5 5 5 b 5 b b c .
+            . c b 5 5 b b 5 5 b b 5 5 b c .
+            . . c 5 5 5 b b b b 5 5 5 f . .
+            . . f f 5 5 5 5 5 5 5 5 f f . .
+            . . f f f f f f f f f f f f . .
+            . . f f f f f f f f f f f f . .
+            . . . f f f f f f f f f f . . .
+            . . . e e f f f f f f f e . . .
+            . . e b f b 5 b b 5 b c b e . .
+            . . e e f 5 5 5 5 5 5 f e e . .
+            . . . . c b 5 5 5 5 b c . . . .
+            . . . . . f f f f f f . . . . .
+            """)],
+        200,
+        characterAnimations.rule(Predicate.FACING_UP))
+    characterAnimations.loop_frames(wiz,
+        [img("""
                 . . . . . . . c c c . . . . . .
                 . . . . . . c b 5 c . . . . . .
                 . . . . c c c 5 5 c c c . . . .
@@ -240,6 +261,27 @@ def create_wizard():
                 """)],
         200,
         characterAnimations.rule(Predicate.MOVING_DOWN))
+    characterAnimations.loop_frames(wiz,
+        [img("""
+            . . . . . . . c c c . . . . . .
+            . . . . . . c b 5 c . . . . . .
+            . . . . c c c 5 5 c c c . . . .
+            . . c c b c 5 5 5 5 c c c c . .
+            . c b b 5 b 5 5 5 5 b 5 b b c .
+            . c b 5 5 b b 5 5 b b 5 5 b c .
+            . . f 5 5 5 b b b b 5 5 5 c . .
+            . . f f 5 5 5 5 5 5 5 5 f f . .
+            . . f f f b f e e f b f f f . .
+            . . f f f 1 f b b f 1 f f f . .
+            . . . f f b b b b b b f f . . .
+            . . . e e f e e e e f e e . . .
+            . . e b c b 5 b b 5 b f b e . .
+            . . e e f 5 5 5 5 5 5 f e e . .
+            . . . . c b 5 5 5 5 b c . . . .
+            . . . . . f f f f f f . . . . .
+            """)],
+        200,
+        characterAnimations.rule(Predicate.FACING_DOWN))
     characterAnimations.loop_frames(wiz,
         [img("""
                 . . . . . . . c c . . . . . . .
@@ -317,6 +359,27 @@ def create_wizard():
         characterAnimations.rule(Predicate.MOVING_LEFT))
     characterAnimations.loop_frames(wiz,
         [img("""
+            . . . . . . . c c . . . . . . .
+            . . . . . . c 5 c . . . . . . .
+            . . . . c c 5 5 5 c c c . . . .
+            . . c c c c 5 5 5 5 c b c c . .
+            . c b b 5 b 5 5 5 5 b 5 b b c .
+            . c b 5 5 b b 5 5 b b 5 5 b c .
+            . . c 5 5 5 b b b b 5 5 5 f . .
+            . . . f 5 5 5 5 5 5 5 5 f f . .
+            . . . . f e e e f b e e f f . .
+            . . . . f e b b f 1 b f f f . .
+            . . . . f b b b b b b f f . . .
+            . . . . . f e e e e f e e . . .
+            . . . . . f 5 b b e b b e . . .
+            . . . . f 5 5 5 5 e b b e . . .
+            . . . . c b 5 5 5 5 e e . . . .
+            . . . . . f f f f f f . . . . .
+            """)],
+        200,
+        characterAnimations.rule(Predicate.FACING_LEFT))
+    characterAnimations.loop_frames(wiz,
+        [img("""
                 . . . . . . . c c . . . . . . .
                 . . . . . . . c 5 c . . . . . .
                 . . . . c c c 5 5 5 c c . . . .
@@ -390,6 +453,27 @@ def create_wizard():
                 """)],
         200,
         characterAnimations.rule(Predicate.MOVING_RIGHT))
+    characterAnimations.loop_frames(wiz,
+        [img("""
+            . . . . . . . c c . . . . . . .
+            . . . . . . . c 5 c . . . . . .
+            . . . . c c c 5 5 5 c c . . . .
+            . . c c b c 5 5 5 5 c c c c . .
+            . c b b 5 b 5 5 5 5 b 5 b b c .
+            . c b 5 5 b b 5 5 b b 5 5 b c .
+            . . f 5 5 5 b b b b 5 5 5 c . .
+            . . f f 5 5 5 5 5 5 5 5 f . . .
+            . . f f e e b f e e e f . . . .
+            . . f f f b 1 f b b e f . . . .
+            . . . f f b b b b b b f . . . .
+            . . . e e f e e e e f . . . . .
+            . . . e b b e b b 5 f . . . . .
+            . . . e b b e 5 5 5 5 f . . . .
+            . . . . e e 5 5 5 5 b c . . . .
+            . . . . . f f f f f f . . . . .
+            """)],
+        200,
+        characterAnimations.rule(Predicate.FACING_RIGHT))
     return wiz
 def create_label(Icon: Image, Y: number):
     global label
@@ -404,8 +488,8 @@ def create_label(Icon: Image, Y: number):
 def on_a_pressed():
     global projectile, Magic
     if Magic:
-        if characterAnimations.matches_rule(Wizard,
-            characterAnimations.rule(Predicate.FACING_RIGHT, Predicate.MOVING_RIGHT)):
+        if characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.MOVING_RIGHT)) or characterAnimations.matches_rule(Wizard,
+            characterAnimations.rule(Predicate.NOT_MOVING, Predicate.FACING_RIGHT)):
             projectile = sprites.create_projectile_from_sprite(img("""
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
@@ -425,9 +509,10 @@ def on_a_pressed():
                     . . . . . . . . . . . . . . . .
                     """),
                 Wizard,
-                70,
+                100,
                 0)
-        elif characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.FACING_LEFT)):
+        elif characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.MOVING_LEFT)) or characterAnimations.matches_rule(Wizard,
+            characterAnimations.rule(Predicate.NOT_MOVING, Predicate.FACING_LEFT)):
             projectile = sprites.create_projectile_from_sprite(img("""
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
@@ -447,9 +532,10 @@ def on_a_pressed():
                     . . . . . . . . . . . . . . . .
                     """),
                 Wizard,
-                -70,
+                -100,
                 0)
-        elif characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.FACING_UP)):
+        elif characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.MOVING_UP)) or characterAnimations.matches_rule(Wizard,
+            characterAnimations.rule(Predicate.NOT_MOVING, Predicate.FACING_UP)):
             projectile = sprites.create_projectile_from_sprite(img("""
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
@@ -470,8 +556,9 @@ def on_a_pressed():
                     """),
                 Wizard,
                 0,
-                70)
-        elif characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.FACING_DOWN)):
+                -100)
+        elif characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.MOVING_DOWN)) or characterAnimations.matches_rule(Wizard,
+            characterAnimations.rule(Predicate.NOT_MOVING, Predicate.FACING_DOWN)):
             projectile = sprites.create_projectile_from_sprite(img("""
                     . . . . . . . . . . . . . . . .
                     . . . . . . . . . . . . . . . .
@@ -492,7 +579,7 @@ def on_a_pressed():
                     """),
                 Wizard,
                 0,
-                -70)
+                100)
         projectile.start_effect(effects.trail)
         Magic += -1
         update_labels()
