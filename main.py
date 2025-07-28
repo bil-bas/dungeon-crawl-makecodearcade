@@ -1,3 +1,7 @@
+@namespace
+class SpriteKind:
+    Boss = SpriteKind.create()
+
 def on_overlap_tile(sprite, location):
     tiles.set_tile_at(location, assets.tile("""
         transparency16
@@ -49,6 +53,10 @@ def render_walls():
             create_ghost(location3)
         elif tiles.tile_at_location_equals(location3, sprites.dungeon.stair_ladder) or (tiles.tile_at_location_equals(location3, sprites.dungeon.door_closed_north) or tiles.tile_at_location_equals(location3, sprites.dungeon.chest_closed)):
             tiles.set_wall_at(location3, True)
+        elif tiles.tile_at_location_equals(location3, tileUtil.object12):
+            pass
+        elif tiles.tile_at_location_equals(location3, tileUtil.object14):
+            create_boss(location3)
     tileUtil.for_each_tile_in_map(tileUtil.current_tilemap(), on_for_each_tile_in_map)
     
 def create_wizard():
@@ -819,21 +827,356 @@ def create_ghost(tile: tiles.Location):
                 """)],
         200,
         characterAnimations.rule(Predicate.MOVING_DOWN))
+def create_boss(tile2: tiles.Location):
+    global mySprite
+    tiles.set_tile_at(tile2, assets.tile("""
+        transparency16
+        """))
+    mySprite = sprites.create(img("""
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . c c . . .
+            . . . . . . . c c c c 6 3 c . .
+            . . . . . . c 6 3 3 3 3 6 c . .
+            . . . . . c 6 6 3 3 3 3 3 3 c .
+            . . . . c 6 6 6 6 3 3 3 3 3 3 c
+            . c c c c c 6 6 c c 3 3 3 3 3 c
+            b 5 5 c 3 3 c c 5 5 c 3 3 3 c c
+            f f 5 c c c 3 c 5 f f 6 6 6 c c
+            f f 5 c c c c c 5 f f 3 3 3 3 c
+            . b 5 5 3 c 3 5 5 c 3 3 3 3 3 c
+            . c 4 4 5 5 5 5 4 c c 3 3 3 c .
+            c 4 5 5 4 4 4 4 5 5 4 c b b . .
+            c 5 5 5 c 4 c 5 5 5 c 4 c 5 c .
+            c 5 5 5 5 c 5 5 5 5 c 4 c 5 c .
+            . c c c c c c c c c . . c c c .
+            """),
+        SpriteKind.Boss)
+    tiles.place_on_tile(mySprite, tile2)
+    mySprite.vy = 30
+    characterAnimations.loop_frames(mySprite,
+        [img("""
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . . c 5 5 5 5 b c c 3 3 3 3 3 c
+                . . c 4 5 5 4 b 5 5 c 3 3 3 c .
+                . c 5 b 4 4 b b 5 c c b b b . .
+                . c 4 4 b 5 5 5 4 c 4 4 4 5 b .
+                . c 5 4 c 5 5 5 c 4 4 4 c 5 c .
+                . c 5 c 5 5 5 5 c 4 4 4 c c c .
+                . . c c c c c c c . . . . . . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . c c . . . .
+                . . . . . . c c c c 6 3 c . . .
+                . . . . . c 6 6 3 3 3 6 c . . .
+                . . . . c 6 6 3 3 3 3 3 3 c . .
+                b c c c 6 6 c c 3 3 3 3 3 3 c .
+                b 5 5 c 6 c 5 5 c 3 3 3 3 3 c .
+                f f 5 c 6 c 5 f f 6 3 3 3 c c .
+                f f 5 c c c 5 f f 6 6 6 6 c c .
+                . b 5 5 3 5 5 c 3 3 3 3 3 3 c .
+                . c 5 5 5 5 4 c c c 3 3 3 3 c .
+                . c 4 5 5 4 4 b 5 5 c 3 3 c . .
+                . c 5 b 4 4 b b 5 c b b c . . .
+                . c c 5 4 c 5 5 5 c c 5 c . . .
+                . . . c c 5 5 5 5 c c c c . . .
+                . . . . c c c c c c . . . . . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 6 3 3 3 6 c . .
+                . . . . . c 6 6 3 3 3 3 3 3 c .
+                . b c c c 6 6 c c 3 3 3 3 3 3 c
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . f f 5 c c c 5 f f 6 6 6 6 c c
+                . . b 5 5 3 5 5 c c c 3 3 3 3 c
+                . . c 5 5 5 5 5 b 5 5 c 3 3 3 c
+                . c 4 4 5 5 4 4 b b 5 c 3 3 c .
+                . c 5 5 b 4 4 4 b 5 5 5 b c . .
+                . c 5 5 5 4 4 4 c 5 5 5 c b . .
+                . . c c c c 4 c 5 5 5 5 c c . .
+                . . . . c c c c c c c c c c . .
+                """),
+            img("""
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . c c 5 5 5 5 4 c c 3 3 3 3 3 c
+                c 5 5 4 5 5 4 c 5 5 c 3 3 3 c .
+                b 5 4 b 4 4 4 c 5 5 5 b c c . .
+                c 4 5 5 b 4 4 c 5 5 5 c b b . .
+                c 5 5 5 c 4 c 5 5 5 5 c c 5 b .
+                c 5 5 5 5 c 4 c c c c c c 5 c .
+                . c c c c c c . . . . . c c c .
+                """)],
+        200,
+        characterAnimations.rule(Predicate.MOVING_UP))
+    characterAnimations.loop_frames(mySprite,
+        [img("""
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c b 5 5 5 5 c . .
+                . c 3 3 3 c 5 5 b 4 5 5 4 c . .
+                . . b b b c c 5 b b 4 4 b 5 c .
+                . b 5 4 4 4 c 4 5 5 5 b 4 4 c .
+                . c 5 c 4 4 4 c 5 5 5 c 4 5 c .
+                . c c c 4 4 4 c 5 5 5 5 c 5 c .
+                . . . . . . . c c c c c c c . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . . c c . . . . . . . . . .
+                . . . c 3 6 c c c c . . . . . .
+                . . . c 6 3 3 3 6 6 c . . . . .
+                . . c 3 3 3 3 3 3 6 6 c . . . .
+                . c 3 3 3 3 3 3 c c 6 6 c c c b
+                . c 3 3 3 3 3 c 5 5 c 6 c 5 5 b
+                . c c 3 3 3 6 f f 5 c 6 c 5 f f
+                . c c 6 6 6 6 f f 5 c c c 5 f f
+                . c 3 3 3 3 3 3 c 5 5 3 5 5 b .
+                . c 3 3 3 3 c c c 4 5 5 5 5 c .
+                . . c 3 3 c 5 5 b 4 4 5 5 4 c .
+                . . . c b b c 5 b b 4 4 b 5 c .
+                . . . c 5 c c 5 5 5 c 4 5 c c .
+                . . . c c c c 5 5 5 5 c c . . .
+                . . . . . . c c c c c c . . . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 6 6 c . . . . . .
+                . c 3 3 3 3 3 3 6 6 c . . . . .
+                c 3 3 3 3 3 3 c c 6 6 c c c b .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 f f 5 c c c 5 f f .
+                c 3 3 3 3 c c c 5 5 3 5 5 b . .
+                c 3 3 3 c 5 5 b 5 5 5 5 5 c . .
+                . c 3 3 c 5 b b 4 4 5 5 4 4 c .
+                . . c b 5 5 5 b 4 4 4 b 5 5 c .
+                . . b c 5 5 5 c 4 4 4 5 5 5 c .
+                . . c c 5 5 5 5 c 4 c c c c . .
+                . . c c c c c c c c c c . . . .
+                """),
+            img("""
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c 4 5 5 5 5 c c .
+                . c 3 3 3 c 5 5 c 4 5 5 4 5 5 c
+                . . c c b 5 5 5 c 4 4 4 b 4 5 b
+                . . b b c 5 5 5 c 4 4 b 5 5 4 c
+                . b 5 c c 5 5 5 5 c 4 c 5 5 5 c
+                . c 5 c c c c c c 4 c 5 5 5 5 c
+                . c c c . . . . . c c c c c c .
+                """)],
+        200,
+        characterAnimations.rule(Predicate.MOVING_DOWN))
+    characterAnimations.loop_frames(mySprite,
+        [img("""
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . . c 5 5 5 5 b c c 3 3 3 3 3 c
+                . . c 4 5 5 4 b 5 5 c 3 3 3 c .
+                . c 5 b 4 4 b b 5 c c b b b . .
+                . c 4 4 b 5 5 5 4 c 4 4 4 5 b .
+                . c 5 4 c 5 5 5 c 4 4 4 c 5 c .
+                . c 5 c 5 5 5 5 c 4 4 4 c c c .
+                . . c c c c c c c . . . . . . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . c c . . . .
+                . . . . . . c c c c 6 3 c . . .
+                . . . . . c 6 6 3 3 3 6 c . . .
+                . . . . c 6 6 3 3 3 3 3 3 c . .
+                b c c c 6 6 c c 3 3 3 3 3 3 c .
+                b 5 5 c 6 c 5 5 c 3 3 3 3 3 c .
+                f f 5 c 6 c 5 f f 6 3 3 3 c c .
+                f f 5 c c c 5 f f 6 6 6 6 c c .
+                . b 5 5 3 5 5 c 3 3 3 3 3 3 c .
+                . c 5 5 5 5 4 c c c 3 3 3 3 c .
+                . c 4 5 5 4 4 b 5 5 c 3 3 c . .
+                . c 5 b 4 4 b b 5 c b b c . . .
+                . c c 5 4 c 5 5 5 c c 5 c . . .
+                . . . c c 5 5 5 5 c c c c . . .
+                . . . . c c c c c c . . . . . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 6 3 3 3 6 c . .
+                . . . . . c 6 6 3 3 3 3 3 3 c .
+                . b c c c 6 6 c c 3 3 3 3 3 3 c
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . f f 5 c c c 5 f f 6 6 6 6 c c
+                . . b 5 5 3 5 5 c c c 3 3 3 3 c
+                . . c 5 5 5 5 5 b 5 5 c 3 3 3 c
+                . c 4 4 5 5 4 4 b b 5 c 3 3 c .
+                . c 5 5 b 4 4 4 b 5 5 5 b c . .
+                . c 5 5 5 4 4 4 c 5 5 5 c b . .
+                . . c c c c 4 c 5 5 5 5 c c . .
+                . . . . c c c c c c c c c c . .
+                """),
+            img("""
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . c c 5 5 5 5 4 c c 3 3 3 3 3 c
+                c 5 5 4 5 5 4 c 5 5 c 3 3 3 c .
+                b 5 4 b 4 4 4 c 5 5 5 b c c . .
+                c 4 5 5 b 4 4 c 5 5 5 c b b . .
+                c 5 5 5 c 4 c 5 5 5 5 c c 5 b .
+                c 5 5 5 5 c 4 c c c c c c 5 c .
+                . c c c c c c . . . . . c c c .
+                """)],
+        200,
+        characterAnimations.rule(Predicate.MOVING_LEFT))
+    characterAnimations.loop_frames(mySprite,
+        [img("""
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c b 5 5 5 5 c . .
+                . c 3 3 3 c 5 5 b 4 5 5 4 c . .
+                . . b b b c c 5 b b 4 4 b 5 c .
+                . b 5 4 4 4 c 4 5 5 5 b 4 4 c .
+                . c 5 c 4 4 4 c 5 5 5 c 4 5 c .
+                . c c c 4 4 4 c 5 5 5 5 c 5 c .
+                . . . . . . . c c c c c c c . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . . c c . . . . . . . . . .
+                . . . c 3 6 c c c c . . . . . .
+                . . . c 6 3 3 3 6 6 c . . . . .
+                . . c 3 3 3 3 3 3 6 6 c . . . .
+                . c 3 3 3 3 3 3 c c 6 6 c c c b
+                . c 3 3 3 3 3 c 5 5 c 6 c 5 5 b
+                . c c 3 3 3 6 f f 5 c 6 c 5 f f
+                . c c 6 6 6 6 f f 5 c c c 5 f f
+                . c 3 3 3 3 3 3 c 5 5 3 5 5 b .
+                . c 3 3 3 3 c c c 4 5 5 5 5 c .
+                . . c 3 3 c 5 5 b 4 4 5 5 4 c .
+                . . . c b b c 5 b b 4 4 b 5 c .
+                . . . c 5 c c 5 5 5 c 4 5 c c .
+                . . . c c c c 5 5 5 5 c c . . .
+                . . . . . . c c c c c c . . . .
+                """),
+            img("""
+                . . . . . . . . . . . . . . . .
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 6 6 c . . . . . .
+                . c 3 3 3 3 3 3 6 6 c . . . . .
+                c 3 3 3 3 3 3 c c 6 6 c c c b .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 f f 5 c c c 5 f f .
+                c 3 3 3 3 c c c 5 5 3 5 5 b . .
+                c 3 3 3 c 5 5 b 5 5 5 5 5 c . .
+                . c 3 3 c 5 b b 4 4 5 5 4 4 c .
+                . . c b 5 5 5 b 4 4 4 b 5 5 c .
+                . . b c 5 5 5 c 4 4 4 5 5 5 c .
+                . . c c 5 5 5 5 c 4 c c c c . .
+                . . c c c c c c c c c c . . . .
+                """),
+            img("""
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c 4 5 5 5 5 c c .
+                . c 3 3 3 c 5 5 c 4 5 5 4 5 5 c
+                . . c c b 5 5 5 c 4 4 4 b 4 5 b
+                . . b b c 5 5 5 c 4 4 b 5 5 4 c
+                . b 5 c c 5 5 5 5 c 4 c 5 5 5 c
+                . c 5 c c c c c c 4 c 5 5 5 5 c
+                . c c c . . . . . c c c c c c .
+                """)],
+        200,
+        characterAnimations.rule(Predicate.MOVING_RIGHT))
+
+def on_hit_wall2(sprite4, location5):
+    if characterAnimations.matches_rule(sprite4, characterAnimations.rule(Predicate.MOVING_UP)):
+        mySprite.set_velocity(-30, 0)
+    elif characterAnimations.matches_rule(sprite4, characterAnimations.rule(Predicate.MOVING_DOWN)):
+        mySprite.set_velocity(30, 0)
+    elif characterAnimations.matches_rule(sprite4, characterAnimations.rule(Predicate.MOVING_LEFT)):
+        mySprite.set_velocity(0, 30)
+    elif characterAnimations.matches_rule(sprite4, characterAnimations.rule(Predicate.MOVING_RIGHT)):
+        mySprite.set_velocity(0, -30)
+scene.on_hit_wall(SpriteKind.Boss, on_hit_wall2)
+
 def update_labels():
     magic_label.set_text("x" + str(Magic))
     key_label.set_text("x" + str(Keys))
     coin_label.set_text("x" + str(coins))
 def advance_level():
     global current_level
-    if current_level == len(levels):
-        game.game_over(True)
-    else:
-        current_level += 1
-        tiles.set_current_tilemap(levels[current_level])
-        render_walls()
-def create_bat(tile2: tiles.Location):
+    current_level += 1
+    tiles.set_current_tilemap(levels[current_level])
+    render_walls()
+def create_bat(tile3: tiles.Location):
     global mySprite
-    tiles.set_tile_at(tile2, assets.tile("""
+    tiles.set_tile_at(tile3, assets.tile("""
         transparency16
         """))
     mySprite = sprites.create(img("""
@@ -855,7 +1198,7 @@ def create_bat(tile2: tiles.Location):
             . . . f f f f f f f . . . . . .
             """),
         SpriteKind.enemy)
-    tiles.place_on_tile(mySprite, tile2)
+    tiles.place_on_tile(mySprite, tile3)
     mySprite.vx = 40
     mySprite.set_flag(SpriteFlag.BOUNCE_ON_WALL, True)
     characterAnimations.loop_frames(mySprite,
@@ -1009,9 +1352,9 @@ def create_bat(tile2: tiles.Location):
         200,
         characterAnimations.rule(Predicate.MOVING_RIGHT))
 
-def on_overlap_tile3(sprite4, location5):
+def on_overlap_tile3(sprite5, location6):
     global Magic
-    tiles.set_tile_at(location5, assets.tile("""
+    tiles.set_tile_at(location6, assets.tile("""
         transparency16
         """))
     music.play(music.melody_playable(music.power_up),
@@ -1024,21 +1367,30 @@ scene.on_overlap_tile(SpriteKind.player,
         """),
     on_overlap_tile3)
 
-def on_overlap_tile4(sprite5, location6):
+def on_overlap_tile4(sprite6, location7):
+    music.play(music.create_sound_effect(WaveShape.NOISE,
+            5000,
+            0,
+            255,
+            0,
+            500,
+            SoundExpressionEffect.NONE,
+            InterpolationCurve.LINEAR),
+        music.PlaybackMode.UNTIL_DONE)
     advance_level()
 scene.on_overlap_tile(SpriteKind.player,
     sprites.dungeon.hazard_hole,
     on_overlap_tile4)
 
-def on_hit_wall2(sprite6, location7):
-    if tiles.tile_at_location_equals(location7, sprites.dungeon.stair_ladder):
-        tiles.set_tile_at(location7, assets.tile("""
+def on_hit_wall3(sprite7, location8):
+    if tiles.tile_at_location_equals(location8, sprites.dungeon.stair_ladder):
+        tiles.set_tile_at(location8, assets.tile("""
             transparency16
             """))
         music.play(music.melody_playable(music.knock),
             music.PlaybackMode.IN_BACKGROUND)
-        tiles.set_wall_at(location7, False)
-scene.on_hit_wall(SpriteKind.projectile, on_hit_wall2)
+        tiles.set_wall_at(location8, False)
+scene.on_hit_wall(SpriteKind.projectile, on_hit_wall3)
 
 def init_inventory():
     global coins, Magic, Keys, key_label, magic_label, coin_label
@@ -1092,12 +1444,12 @@ def init_inventory():
         115)
     update_labels()
 
-def on_on_overlap(sprite7, otherSprite):
-    sprites.destroy(sprite7)
+def on_on_overlap(sprite8, otherSprite):
+    sprites.destroy(sprite8)
     sprites.destroy(otherSprite, effects.fire, 100)
 sprites.on_overlap(SpriteKind.projectile, SpriteKind.enemy, on_on_overlap)
 
-def on_on_overlap2(sprite8, otherSprite2):
+def on_on_overlap2(sprite9, otherSprite2):
     if True:
         pass
     else:
@@ -1123,11 +1475,14 @@ current_level = 0
 levels: List[tiles.TileMapData] = []
 init_inventory()
 levels = [tilemap("""
-        level1
+        level0
         """),
     tilemap("""
-        level1
+        level7
+        """),
+    tilemap("""
+        level5
         """)]
-current_level = 0
+current_level = -1
 Wizard = create_wizard()
 advance_level()

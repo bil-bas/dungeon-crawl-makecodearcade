@@ -1,10 +1,23 @@
 namespace SpriteKind {
-    export const Boss = SpriteKind.create()
+    export const BossSnail = SpriteKind.create()
+    export const Ghost = SpriteKind.create()
+    export const Bat = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     info.changeLifeBy(1)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.BossSnail, function (sprite, otherSprite) {
+    music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.InBackground)
+    game.setGameOverMessage(false, "Slimed by the boss snail!")
+    info.changeLifeBy(-10)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function (sprite, otherSprite) {
+    music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
+    sprites.destroy(otherSprite)
+    game.setGameOverMessage(false, "Sucked dry by a vampire bat!")
+    info.changeLifeBy(-1)
 })
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
@@ -32,18 +45,39 @@ function render_walls () {
             create_bat(location)
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object6)) {
             create_ghost(location)
-        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder) || (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed))) {
-            tiles.setWallAt(location, true)
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object12)) {
         	
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
             create_boss(location)
+        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder) || (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed))) {
+            tiles.setWallAt(location, true)
         }
     })
 }
+scene.onHitWall(SpriteKind.BossSnail, function (sprite, location) {
+    if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
+        mySprite.setVelocity(-30, 0)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
+        mySprite.setVelocity(30, 0)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingLeft))) {
+        mySprite.setVelocity(0, 30)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingRight))) {
+        mySprite.setVelocity(0, -30)
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function (sprite, otherSprite) {
+    music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
+    sprites.destroy(otherSprite)
+    if (Magic) {
+        Magic += -1
+        update_labels()
+    } else {
+        game.setGameOverMessage(false, "Soul drained by a ghost!")
+        info.changeLifeBy(-1)
+    }
+})
 function create_wizard () {
     wiz = sprites.create(assets.image`Wiz`, SpriteKind.Player)
-    controller.moveSprite(wiz, 60, 60)
     info.setLife(3)
     scene.cameraFollowSprite(wiz)
     characterAnimations.loopFrames(
@@ -452,7 +486,7 @@ function create_label (Icon: Image, Y: number) {
     return label
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Magic) {
+    if (Magic && !(falling)) {
         if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingRight)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingRight))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
@@ -562,7 +596,7 @@ function create_ghost (tile: tiles.Location) {
         ........................
         ........................
         ........................
-        `, SpriteKind.Enemy)
+        `, SpriteKind.Ghost)
     tiles.placeOnTile(mySprite, tile)
     mySprite.vy = 40
     mySprite.setFlag(SpriteFlag.BounceOnWall, true)
@@ -779,6 +813,14 @@ function create_ghost (tile: tiles.Location) {
     characterAnimations.rule(Predicate.MovingDown)
     )
 }
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
+})
 function create_boss (tile: tiles.Location) {
     tiles.setTileAt(tile, assets.tile`transparency16`)
     mySprite = sprites.create(img`
@@ -798,9 +840,10 @@ function create_boss (tile: tiles.Location) {
         c 5 5 5 c 4 c 5 5 5 c 4 c 5 c . 
         c 5 5 5 5 c 5 5 5 5 c 4 c 5 c . 
         . c c c c c c c c c . . c c c . 
-        `, SpriteKind.Boss)
+        `, SpriteKind.BossSnail)
     tiles.placeOnTile(mySprite, tile)
     mySprite.vy = 30
+    mySprite.setScale(2, ScaleAnchor.Middle)
     characterAnimations.loopFrames(
     mySprite,
     [img`
@@ -1098,16 +1141,8 @@ function create_boss (tile: tiles.Location) {
     characterAnimations.rule(Predicate.MovingRight)
     )
 }
-scene.onHitWall(SpriteKind.Boss, function (sprite, location) {
-    if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
-        mySprite.setVelocity(-30, 0)
-    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
-        mySprite.setVelocity(30, 0)
-    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingLeft))) {
-        mySprite.setVelocity(0, 30)
-    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingRight))) {
-        mySprite.setVelocity(0, -30)
-    }
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BossSnail, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
 })
 function update_labels () {
     magic_label.setText("x" + Magic)
@@ -1116,6 +1151,8 @@ function update_labels () {
 }
 function advance_level () {
     current_level += 1
+    Wizard.setScale(1, ScaleAnchor.Middle)
+    controller.moveSprite(Wizard, 60, 60)
     tiles.setCurrentTilemap(levels[current_level])
     render_walls()
 }
@@ -1138,7 +1175,7 @@ function create_bat (tile: tiles.Location) {
         . f b b b b b b b b c f . . . . 
         . . f b b b b b b c f . . . . . 
         . . . f f f f f f f . . . . . . 
-        `, SpriteKind.Enemy)
+        `, SpriteKind.Bat)
     tiles.placeOnTile(mySprite, tile)
     mySprite.vx = 40
     mySprite.setFlag(SpriteFlag.BounceOnWall, true)
@@ -1298,17 +1335,22 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function (sprite, l
     update_labels()
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function (sprite, location) {
-    music.play(music.createSoundEffect(
-    WaveShape.Noise,
-    5000,
-    0,
-    255,
-    0,
-    500,
-    SoundExpressionEffect.None,
-    InterpolationCurve.Linear
-    ), music.PlaybackMode.UntilDone)
-    advance_level()
+    if (!(falling)) {
+        falling = 1
+        controller.moveSprite(sprite, 0, 0)
+        tiles.placeOnTile(sprite, location)
+        timer.after(250, function () {
+            music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.InBackground)
+            sprite.setScale(0.75, ScaleAnchor.Middle)
+            timer.after(500, function () {
+                sprite.setScale(0.5, ScaleAnchor.Middle)
+                timer.after(500, function () {
+                    advance_level()
+                    falling = 0
+                })
+            })
+        })
+    }
 })
 scene.onHitWall(SpriteKind.Projectile, function (sprite, location) {
     if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
@@ -1365,33 +1407,21 @@ function init_inventory () {
         `, 115)
     update_labels()
 }
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
-    sprites.destroy(sprite)
-    sprites.destroy(otherSprite, effects.fire, 100)
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    if (true) {
-    	
-    } else {
-    	
-    }
-    music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
-    sprites.destroy(otherSprite)
-    info.changeLifeBy(-1)
-})
 let coin_label: TextSprite = null
 let key_label: TextSprite = null
 let magic_label: TextSprite = null
-let mySprite: Sprite = null
 let projectile: Sprite = null
-let Magic = 0
 let label: TextSprite = null
 let wiz: Sprite = null
+let Magic = 0
+let mySprite: Sprite = null
 let coins = 0
 let Keys = 0
 let Wizard: Sprite = null
 let current_level = 0
 let levels: tiles.TileMapData[] = []
+let falling = 0
+falling = 0
 init_inventory()
 levels = [tilemap`level0`, tilemap`level7`, tilemap`level5`]
 current_level = -1
