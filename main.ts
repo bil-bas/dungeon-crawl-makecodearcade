@@ -29,7 +29,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) && Keys >= 1) {
         Keys += -1
         tiles.setTileAt(location, sprites.dungeon.chestOpen)
-        music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
+        music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
         coins += 10
         update_labels()
     }
@@ -49,7 +49,7 @@ function render_walls () {
         	
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
             create_boss(location)
-        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder) || (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed))) {
+        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) || (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder))) {
             tiles.setWallAt(location, true)
         }
     })
