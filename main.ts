@@ -153,6 +153,29 @@ function create_wizard () {
     characterAnimations.loopFrames(
     wiz,
     [img`
+        . . . . . . c c c . . . . . . . 
+        . . . . . . c 5 b c . . . . . . 
+        . . . . c c c 5 5 c c c . . . . 
+        . . c c c c 5 5 5 5 c b c c . . 
+        . c b b 5 b 5 5 5 5 b 5 b b c . 
+        . c b 5 5 b b 5 5 b b 5 5 b c . 
+        . . c 5 5 5 b b b b 5 5 5 f . . 
+        . . f f 5 5 5 5 5 5 5 5 f f . . 
+        . . f f f f f f f f f f f f . . 
+        . . f f f f f f f f f f f f . . 
+        . . . f f f f f f f f f f . . . 
+        . . . e e f f f f f f f e . . . 
+        . . e b f b 5 b b 5 b c b e . . 
+        . . e e f 5 5 5 5 5 5 f e e . . 
+        . . . . c b 5 5 5 5 b c . . . . 
+        . . . . . f f f f f f . . . . . 
+        `],
+    200,
+    characterAnimations.rule(Predicate.FacingUp)
+    )
+    characterAnimations.loopFrames(
+    wiz,
+    [img`
         . . . . . . . c c c . . . . . . 
         . . . . . . c b 5 c . . . . . . 
         . . . . c c c 5 5 c c c . . . . 
@@ -223,6 +246,29 @@ function create_wizard () {
         `],
     200,
     characterAnimations.rule(Predicate.MovingDown)
+    )
+    characterAnimations.loopFrames(
+    wiz,
+    [img`
+        . . . . . . . c c c . . . . . . 
+        . . . . . . c b 5 c . . . . . . 
+        . . . . c c c 5 5 c c c . . . . 
+        . . c c b c 5 5 5 5 c c c c . . 
+        . c b b 5 b 5 5 5 5 b 5 b b c . 
+        . c b 5 5 b b 5 5 b b 5 5 b c . 
+        . . f 5 5 5 b b b b 5 5 5 c . . 
+        . . f f 5 5 5 5 5 5 5 5 f f . . 
+        . . f f f b f e e f b f f f . . 
+        . . f f f 1 f b b f 1 f f f . . 
+        . . . f f b b b b b b f f . . . 
+        . . . e e f e e e e f e e . . . 
+        . . e b c b 5 b b 5 b f b e . . 
+        . . e e f 5 5 5 5 5 5 f e e . . 
+        . . . . c b 5 5 5 5 b c . . . . 
+        . . . . . f f f f f f . . . . . 
+        `],
+    200,
+    characterAnimations.rule(Predicate.FacingDown)
     )
     characterAnimations.loopFrames(
     wiz,
@@ -302,6 +348,29 @@ function create_wizard () {
     wiz,
     [img`
         . . . . . . . c c . . . . . . . 
+        . . . . . . c 5 c . . . . . . . 
+        . . . . c c 5 5 5 c c c . . . . 
+        . . c c c c 5 5 5 5 c b c c . . 
+        . c b b 5 b 5 5 5 5 b 5 b b c . 
+        . c b 5 5 b b 5 5 b b 5 5 b c . 
+        . . c 5 5 5 b b b b 5 5 5 f . . 
+        . . . f 5 5 5 5 5 5 5 5 f f . . 
+        . . . . f e e e f b e e f f . . 
+        . . . . f e b b f 1 b f f f . . 
+        . . . . f b b b b b b f f . . . 
+        . . . . . f e e e e f e e . . . 
+        . . . . . f 5 b b e b b e . . . 
+        . . . . f 5 5 5 5 e b b e . . . 
+        . . . . c b 5 5 5 5 e e . . . . 
+        . . . . . f f f f f f . . . . . 
+        `],
+    200,
+    characterAnimations.rule(Predicate.FacingLeft)
+    )
+    characterAnimations.loopFrames(
+    wiz,
+    [img`
+        . . . . . . . c c . . . . . . . 
         . . . . . . . c 5 c . . . . . . 
         . . . . c c c 5 5 5 c c . . . . 
         . . c c b c 5 5 5 5 c c c c . . 
@@ -372,6 +441,29 @@ function create_wizard () {
     200,
     characterAnimations.rule(Predicate.MovingRight)
     )
+    characterAnimations.loopFrames(
+    wiz,
+    [img`
+        . . . . . . . c c . . . . . . . 
+        . . . . . . . c 5 c . . . . . . 
+        . . . . c c c 5 5 5 c c . . . . 
+        . . c c b c 5 5 5 5 c c c c . . 
+        . c b b 5 b 5 5 5 5 b 5 b b c . 
+        . c b 5 5 b b 5 5 b b 5 5 b c . 
+        . . f 5 5 5 b b b b 5 5 5 c . . 
+        . . f f 5 5 5 5 5 5 5 5 f . . . 
+        . . f f e e b f e e e f . . . . 
+        . . f f f b 1 f b b e f . . . . 
+        . . . f f b b b b b b f . . . . 
+        . . . e e f e e e e f . . . . . 
+        . . . e b b e b b 5 f . . . . . 
+        . . . e b b e 5 5 5 5 f . . . . 
+        . . . . e e 5 5 5 5 b c . . . . 
+        . . . . . f f f f f f . . . . . 
+        `],
+    200,
+    characterAnimations.rule(Predicate.FacingRight)
+    )
     return wiz
 }
 function create_label (Icon: Image, Y: number) {
@@ -385,7 +477,7 @@ function create_label (Icon: Image, Y: number) {
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Magic) {
-        if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingRight)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingRight))) {
+        if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingRight)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingRight))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -404,7 +496,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 `, Wizard, 100, 0)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingLeft)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingLeft))) {
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingLeft)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingLeft))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -423,7 +515,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 `, Wizard, -100, 0)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingUp)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingUp))) {
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingUp)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingUp))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -442,7 +534,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 `, Wizard, 0, -100)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingDown)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.FacingDown))) {
+        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingDown)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingDown))) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
