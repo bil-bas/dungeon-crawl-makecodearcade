@@ -19,6 +19,24 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function (sprite, otherSpri
     sprites.destroy(otherSprite)
     game.setGameOverMessage(false, "Sucked dry by a vampire bat!")
     info.changeLifeBy(-1)
+    change_floater(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . f f f . f f f . . . . 
+        . . . . f 3 3 3 f 3 3 3 f . . . 
+        . . . . f 3 3 3 3 3 1 3 f . . . 
+        . . . . f 3 3 3 3 3 3 3 f . . . 
+        . . . . . f 3 b b b 3 f . . . . 
+        . . . . . f f b b b f f . . . . 
+        . . . . . . f f b f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, -1)
 })
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
@@ -71,10 +89,46 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function (sprite, otherSp
     sprites.destroy(otherSprite)
     if (Magic) {
         Magic += -1
+        change_floater(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . 2 2 . . . . . . . 
+            . . . . . . 3 1 1 3 . . . . . . 
+            . . . . . 2 1 1 1 1 2 . . . . . 
+            . . . . . 2 1 1 1 1 2 . . . . . 
+            . . . . . . 3 1 1 3 . . . . . . 
+            . . . . . . . 2 2 . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, -1)
         update_labels()
     } else {
         game.setGameOverMessage(false, "Soul drained by a ghost!")
         info.changeLifeBy(-1)
+        change_floater(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . f f f . f f f . . . . 
+            . . . . f 3 3 3 f 3 3 3 f . . . 
+            . . . . f 3 3 3 3 3 1 3 f . . . 
+            . . . . f 3 3 3 3 3 3 3 f . . . 
+            . . . . . f 3 b b b 3 f . . . . 
+            . . . . . f f b b b f f . . . . 
+            . . . . . . f f b f f . . . . . 
+            . . . . . . . f f f . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, -1)
     }
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -484,15 +538,61 @@ function create_wizard () {
     )
     return wiz
 }
+function change_floater (icon: Image, change: number) {
+    if (change > 0) {
+        textSprite = textsprite.create("+" + change)
+    } else {
+        textSprite = textsprite.create("" + change)
+    }
+    textSprite.setMaxFontHeight(5)
+    textSprite.setIcon(icon)
+    textSprite.z = 99
+    textSprite.setPosition(Wizard.x, Wizard.y)
+    timer.after(500, function () {
+        sprites.destroy(textSprite, effects.disintegrate, 500)
+    })
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function (sprite, otherSprite) {
     music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite)
     if (Keys) {
         Keys += -1
+        change_floater(img`
+            . . . . 5 5 5 5 . . . . 
+            . . . 5 e e e e e . . . 
+            . . . 5 e c c e e . . . 
+            . . . 5 e c c e e . . . 
+            . . . 5 e c c 5 e . . . 
+            . . . 5 e e 5 e e . . . 
+            . . . . e e e e . . . . 
+            . . . . . 5 e . . . . . 
+            . . . . . 5 e . . . . . 
+            . . . . . 5 e 5 5 . . . 
+            . . . . . 5 e e e . . . 
+            . . . . . 5 e 5 . . . . 
+            `, -1)
         update_labels()
     } else {
         game.setGameOverMessage(false, "Eyes gouged by evil monkey!")
         info.changeLifeBy(-1)
+        change_floater(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . f f f . f f f . . . . 
+            . . . . f 3 3 3 f 3 3 3 f . . . 
+            . . . . f 3 3 3 3 3 1 3 f . . . 
+            . . . . f 3 3 3 3 3 3 3 f . . . 
+            . . . . . f 3 b b b 3 f . . . . 
+            . . . . . f f b b b f f . . . . 
+            . . . . . . f f b f f . . . . . 
+            . . . . . . . f f f . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, -1)
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
@@ -1872,6 +1972,7 @@ function init_inventory () {
         . . . . . 5 e e e . . . 
         . . . . . 5 e 5 . . . . 
         `, 85)
+    key_label.z += 100
     magic_label = create_label(img`
         . . . . . 3 3 . . . . . 
         . . . . 3 1 1 3 . . . . 
@@ -1886,6 +1987,7 @@ function init_inventory () {
         . . 3 3 3 2 2 2 3 3 . . 
         . . . . . . . . . . . . 
         `, 55)
+    magic_label.z += 100
     coin_label = create_label(img`
         . . . . . . . . . . . . 
         . . . . . . . . . . . . 
@@ -1900,6 +2002,7 @@ function init_inventory () {
         . . . . . . . . . . . . 
         . . . . . . . . . . . . 
         `, 115)
+    coin_label.z += 100
     update_labels()
 }
 let coin_label: TextSprite = null
@@ -1907,6 +2010,7 @@ let key_label: TextSprite = null
 let magic_label: TextSprite = null
 let projectile: Sprite = null
 let label: TextSprite = null
+let textSprite: TextSprite = null
 let wiz: Sprite = null
 let Magic = 0
 let mySprite: Sprite = null
@@ -1916,6 +2020,7 @@ let Wizard: Sprite = null
 let current_level = 0
 let levels: tiles.TileMapData[] = []
 let falling = 0
+game.setGameOverScoringType(game.ScoringType.HighScore)
 falling = 0
 init_inventory()
 levels = [tilemap`level0`, tilemap`level7`, tilemap`level5`]
