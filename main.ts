@@ -10,14 +10,14 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function on_overlap
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     info.changeLifeBy(1)
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.BossSnail, function on_on_overlap(sprite2: Sprite, otherSprite: Sprite) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.BossSnail, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
     music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.InBackground)
     game.setGameOverMessage(false, "Slimed by the boss snail!")
     info.changeLifeBy(-10)
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function on_on_overlap2(sprite3: Sprite, otherSprite2: Sprite) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function on_on_overlap2(sprite: Sprite, otherSprite: Sprite) {
     music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
-    sprites.destroy(otherSprite2)
+    sprites.destroy(otherSprite)
     game.setGameOverMessage(false, "Sucked dry by a vampire bat!")
     info.changeLifeBy(-1)
     change_floater(img`
@@ -39,17 +39,17 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function on_on_overlap2(spr
             . . . . . . . . . . . . . . . .
             `, -1)
 })
-scene.onHitWall(SpriteKind.Player, function on_hit_wall(sprite4: Sprite, location2: tiles.Location) {
+scene.onHitWall(SpriteKind.Player, function on_hit_wall(sprite: Sprite, location: tiles.Location) {
     
-    if (tiles.tileAtLocationEquals(location2, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
+    if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
         Keys += -1
-        tiles.setTileAt(location2, assets.tile`transparency16`)
+        tiles.setTileAt(location, assets.tile`transparency16`)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
-        tiles.setWallAt(location2, false)
+        tiles.setWallAt(location, false)
         update_labels()
-    } else if (tiles.tileAtLocationEquals(location2, sprites.dungeon.chestClosed) && Keys >= 1) {
+    } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) && Keys >= 1) {
         Keys += -1
-        tiles.setTileAt(location2, sprites.dungeon.chestOpen)
+        tiles.setTileAt(location, sprites.dungeon.chestOpen)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
         coins += 10
         update_labels()
@@ -57,28 +57,28 @@ scene.onHitWall(SpriteKind.Player, function on_hit_wall(sprite4: Sprite, locatio
     
 })
 function render_walls() {
-    tileUtil.forEachTileInMap(tileUtil.currentTilemap(), function on_for_each_tile_in_map(column: number, row: number, location3: tiles.Location) {
-        if (tiles.tileAtLocationIsWall(location3)) {
-            tiles.setTileAt(location3, sprites.builtin.brick)
-        } else if (tiles.tileAtLocationEquals(location3, assets.tile`Stairs down`)) {
-            tiles.placeOnTile(Wizard, location3)
-            tiles.setTileAt(location3, assets.tile`transparency16`)
-        } else if (tiles.tileAtLocationEquals(location3, tileUtil.object4)) {
-            create_bat(location3)
-        } else if (tiles.tileAtLocationEquals(location3, tileUtil.object6)) {
-            create_ghost(location3)
-        } else if (tiles.tileAtLocationEquals(location3, tileUtil.object12)) {
-            create_monkey(location3)
-        } else if (tiles.tileAtLocationEquals(location3, tileUtil.object14)) {
-            create_boss(location3)
-        } else if (tiles.tileAtLocationEquals(location3, sprites.dungeon.chestClosed) || (tiles.tileAtLocationEquals(location3, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location3, sprites.dungeon.stairLadder))) {
-            tiles.setWallAt(location3, true)
+    tileUtil.forEachTileInMap(tileUtil.currentTilemap(), function on_for_each_tile_in_map(column: number, row: number, location: tiles.Location) {
+        if (tiles.tileAtLocationIsWall(location)) {
+            tiles.setTileAt(location, sprites.builtin.brick)
+        } else if (tiles.tileAtLocationEquals(location, assets.tile`Stairs down`)) {
+            tiles.placeOnTile(Wizard, location)
+            tiles.setTileAt(location, assets.tile`transparency16`)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object4)) {
+            create_bat(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object6)) {
+            create_ghost(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object12)) {
+            create_monkey(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
+            create_boss(location)
+        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) || tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
+            tiles.setWallAt(location, true)
         }
         
     })
 }
 
-scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite: Sprite, location4: tiles.Location) {
+scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite: Sprite, location: tiles.Location) {
     if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
         sprite.setVelocity(-30, 0)
     } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
@@ -90,12 +90,12 @@ scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite: Sprite, loca
     }
     
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(sprite6: Sprite, otherSprite3: Sprite) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(sprite: Sprite, otherSprite: Sprite) {
     
     music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
-    sprites.destroy(otherSprite3)
+    sprites.destroy(otherSprite)
     if (Magic) {
-        Magic += -1
+        Magic -= 1
         change_floater(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -143,7 +143,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
     
     if (Magic >= 3 && !falling) {
         Starfire()
-        Magic += -3
+        Magic -= 3
         update_labels()
         timer.after(200, function on_after() {
             Starfire()
@@ -512,13 +512,7 @@ function create_wizard(): Sprite {
 }
 
 function change_floater(icon: Image, change: number) {
-    let textSprite: TextSprite;
-    if (change > 0) {
-        textSprite = textsprite.create("+" + ("" + change))
-    } else {
-        textSprite = textsprite.create("" + ("" + change))
-    }
-    
+    let textSprite = textsprite.create((change > 0 ? "+" : "") + ("" + change))
     textSprite.setMaxFontHeight(5)
     textSprite.setIcon(icon)
     textSprite.z = 99
@@ -533,7 +527,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(
     music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite4)
     if (Keys) {
-        Keys += -1
+        Keys -= 1
         change_floater(img`
                 . . . . 5 5 5 5 . . . .
                 . . . 5 e e e e e . . .
@@ -573,9 +567,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(
     }
     
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function on_overlap_tile2(sprite8: Sprite, location5: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function on_overlap_tile2(sprite: Sprite, location: tiles.Location) {
     
-    tiles.setTileAt(location5, assets.tile`transparency16`)
+    tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     Keys += 1
     update_labels()
@@ -673,7 +667,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
         }
         
         projectile.startEffect(effects.trail)
-        Magic += -1
+        Magic -= 1
         update_labels()
     }
     
@@ -913,16 +907,16 @@ function create_ghost(tile: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingDown))
 }
 
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, function on_on_overlap5(sprite9: Sprite, otherSprite5: Sprite) {
-    sprites.destroy(sprite9)
-    sprites.destroy(otherSprite5, effects.fire, 100)
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, function on_on_overlap5(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
 })
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6(sprite10: Sprite, otherSprite6: Sprite) {
-    sprites.destroy(sprite10)
-    sprites.destroy(otherSprite6, effects.fire, 100)
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
 })
-function create_boss(tile2: tiles.Location) {
-    tiles.setTileAt(tile2, assets.tile`transparency16`)
+function create_boss(tile: tiles.Location) {
+    tiles.setTileAt(tile, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . c c . . .
@@ -941,7 +935,7 @@ function create_boss(tile2: tiles.Location) {
             c 5 5 5 5 c 5 5 5 5 c 4 c 5 c .
             . c c c c c c c c c . . c c c .
             `, SpriteKind.BossSnail)
-    tiles.placeOnTile(mySprite, tile2)
+    tiles.placeOnTile(mySprite, tile)
     mySprite.vy = 30
     mySprite.setScale(2, ScaleAnchor.Middle)
     characterAnimations.loopFrames(mySprite, [img`
@@ -1222,8 +1216,8 @@ function create_boss(tile2: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingRight))
 }
 
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BossSnail, function on_on_overlap7(sprite11: Sprite, otherSprite7: Sprite) {
-    sprites.destroy(sprite11)
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BossSnail, function on_on_overlap7(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(sprite)
 })
 function Starfire() {
     let projectile = sprites.createProjectileFromSprite(img`
@@ -1319,10 +1313,8 @@ function advance_level() {
     render_walls()
 }
 
-function create_bat(tile3: tiles.Location) {
-    tiles.setTileAt(tile3, assets.tile`
-        transparency16
-        `)
+function create_bat(tile: tiles.Location) {
+    tiles.setTileAt(tile, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
             . . f f f . . . . . . . . f f f
             . f f c c . . . . . . f c b b c
@@ -1341,7 +1333,7 @@ function create_bat(tile3: tiles.Location) {
             . . f b b b b b b c f . . . . .
             . . . f f f f f f f . . . . . .
             `, SpriteKind.Bat)
-    tiles.placeOnTile(mySprite, tile3)
+    tiles.placeOnTile(mySprite, tile)
     mySprite.vx = 40
     mySprite.setFlag(SpriteFlag.BounceOnWall, true)
     characterAnimations.loopFrames(mySprite, [img`
@@ -1484,9 +1476,9 @@ function create_bat(tile3: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingRight))
 }
 
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function on_overlap_tile3(sprite12: Sprite, location6: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function on_overlap_tile3(sprite: Sprite, location: tiles.Location) {
     
-    tiles.setTileAt(location6, assets.tile`transparency16`)
+    tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     Magic += 1
     update_labels()
@@ -1495,17 +1487,17 @@ info.onLifeZero(function on_life_zero() {
     info.setScore(coins)
     game.gameOver(false)
 })
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_overlap_tile4(sprite13: Sprite, location7: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_overlap_tile4(sprite: Sprite, location: tiles.Location) {
     
     if (!falling) {
         falling = true
-        controller.moveSprite(sprite13, 0, 0)
-        tiles.placeOnTile(sprite13, location7)
+        controller.moveSprite(sprite, 0, 0)
+        tiles.placeOnTile(sprite, location)
         timer.after(250, function on_after4() {
             music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.InBackground)
-            sprite13.setScale(0.75, ScaleAnchor.Middle)
+            sprite.setScale(0.75, ScaleAnchor.Middle)
             timer.after(500, function on_after5() {
-                sprite13.setScale(0.5, ScaleAnchor.Middle)
+                sprite.setScale(0.5, ScaleAnchor.Middle)
                 timer.after(500, function on_after6() {
                     
                     advance_level()
@@ -1516,8 +1508,8 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_o
     }
     
 })
-function create_monkey(tile4: tiles.Location) {
-    tiles.setTileAt(tile4, assets.tile`transparency16`)
+function create_monkey(tile: tiles.Location) {
+    tiles.setTileAt(tile, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
             . . . . f f f f f . . . . . . .
             . . . f e e e e e f . . . . . .
@@ -1536,7 +1528,7 @@ function create_monkey(tile4: tiles.Location) {
             . . . f d d c d d b b d f . . .
             . . . . f f f f f f f f f . . .
             `, SpriteKind.Monkey)
-    tiles.placeOnTile(mySprite, tile4)
+    tiles.placeOnTile(mySprite, tile)
     mySprite.vy = 40
     mySprite.setFlag(SpriteFlag.BounceOnWall, true)
     characterAnimations.loopFrames(mySprite, [img`
@@ -1885,19 +1877,16 @@ function create_monkey(tile4: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingLeft))
 }
 
-scene.onHitWall(SpriteKind.Projectile, function on_hit_wall3(sprite14: Sprite, location8: tiles.Location) {
-    if (tiles.tileAtLocationEquals(location8, sprites.dungeon.stairLadder)) {
-        tiles.setTileAt(location8, assets.tile`transparency16`)
+scene.onHitWall(SpriteKind.Projectile, function on_hit_wall3(sprite: Sprite, location: tiles.Location) {
+    if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
+        tiles.setTileAt(location, assets.tile`transparency16`)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
-        tiles.setWallAt(location8, false)
+        tiles.setWallAt(location, false)
     }
     
 })
 function init_inventory() {
     
-    coins = 0
-    Magic = 3
-    Keys = 0
     key_label = create_label(img`
             . . . . 5 5 5 5 . . . .
             . . . 5 e e e e e . . .
@@ -1949,7 +1938,7 @@ function init_inventory() {
 let coin_label : TextSprite = null
 let key_label : TextSprite = null
 let magic_label : TextSprite = null
-let Magic = 0
+let Magic = 3
 let coins = 0
 let Keys = 0
 let Wizard : Sprite = null

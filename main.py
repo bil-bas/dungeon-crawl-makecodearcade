@@ -16,7 +16,7 @@ scene.on_overlap_tile(SpriteKind.player,
     on_overlap_tile)
 
 
-def on_on_overlap(sprite2, otherSprite):
+def on_on_overlap(sprite, otherSprite):
     music.play(music.melody_playable(music.big_crash),
         music.PlaybackMode.IN_BACKGROUND)
     game.set_game_over_message(False, "Slimed by the boss snail!")
@@ -24,10 +24,10 @@ def on_on_overlap(sprite2, otherSprite):
 sprites.on_overlap(SpriteKind.player, SpriteKind.BossSnail, on_on_overlap)
 
 
-def on_on_overlap2(sprite3, otherSprite2):
+def on_on_overlap2(sprite, otherSprite):
     music.play(music.melody_playable(music.small_crash),
         music.PlaybackMode.IN_BACKGROUND)
-    sprites.destroy(otherSprite2)
+    sprites.destroy(otherSprite)
     game.set_game_over_message(False, "Sucked dry by a vampire bat!")
     info.change_life_by(-1)
     change_floater(img("""
@@ -52,18 +52,18 @@ def on_on_overlap2(sprite3, otherSprite2):
 sprites.on_overlap(SpriteKind.player, SpriteKind.Bat, on_on_overlap2)
 
 
-def on_hit_wall(sprite4, location2):
+def on_hit_wall(sprite, location):
     global Keys, coins
-    if tiles.tile_at_location_equals(location2, sprites.dungeon.door_closed_north) and Keys >= 1:
+    if tiles.tile_at_location_equals(location, sprites.dungeon.door_closed_north) and Keys >= 1:
         Keys += -1
-        tiles.set_tile_at(location2, assets.tile("""transparency16"""))
+        tiles.set_tile_at(location, assets.tile("""transparency16"""))
         music.play(music.melody_playable(music.knock),
             music.PlaybackMode.IN_BACKGROUND)
-        tiles.set_wall_at(location2, False)
+        tiles.set_wall_at(location, False)
         update_labels()
-    elif tiles.tile_at_location_equals(location2, sprites.dungeon.chest_closed) and Keys >= 1:
+    elif tiles.tile_at_location_equals(location, sprites.dungeon.chest_closed) and Keys >= 1:
         Keys += -1
-        tiles.set_tile_at(location2, sprites.dungeon.chest_open)
+        tiles.set_tile_at(location, sprites.dungeon.chest_open)
         music.play(music.melody_playable(music.knock),
             music.PlaybackMode.IN_BACKGROUND)
         coins += 10
@@ -72,26 +72,28 @@ scene.on_hit_wall(SpriteKind.player, on_hit_wall)
 
 
 def render_walls():
-    def on_for_each_tile_in_map(column, row, location3):
-        if tiles.tile_at_location_is_wall(location3):
-            tiles.set_tile_at(location3, sprites.builtin.brick)
-        elif tiles.tile_at_location_equals(location3, assets.tile("""Stairs down""")):
-            tiles.place_on_tile(Wizard, location3)
-            tiles.set_tile_at(location3, assets.tile("""transparency16"""))
-        elif tiles.tile_at_location_equals(location3, tileUtil.object4):
-            create_bat(location3)
-        elif tiles.tile_at_location_equals(location3, tileUtil.object6):
-            create_ghost(location3)
-        elif tiles.tile_at_location_equals(location3, tileUtil.object12):
-            create_monkey(location3)
-        elif tiles.tile_at_location_equals(location3, tileUtil.object14):
-            create_boss(location3)
-        elif tiles.tile_at_location_equals(location3, sprites.dungeon.chest_closed) or (tiles.tile_at_location_equals(location3, sprites.dungeon.door_closed_north) or tiles.tile_at_location_equals(location3, sprites.dungeon.stair_ladder)):
-            tiles.set_wall_at(location3, True)
+    def on_for_each_tile_in_map(column, row, location):
+        if tiles.tile_at_location_is_wall(location):
+            tiles.set_tile_at(location, sprites.builtin.brick)
+        elif tiles.tile_at_location_equals(location, assets.tile("""Stairs down""")):
+            tiles.place_on_tile(Wizard, location)
+            tiles.set_tile_at(location, assets.tile("""transparency16"""))
+        elif tiles.tile_at_location_equals(location, tileUtil.object4):
+            create_bat(location)
+        elif tiles.tile_at_location_equals(location, tileUtil.object6):
+            create_ghost(location)
+        elif tiles.tile_at_location_equals(location, tileUtil.object12):
+            create_monkey(location)
+        elif tiles.tile_at_location_equals(location, tileUtil.object14):
+            create_boss(location)
+        elif (tiles.tile_at_location_equals(location, sprites.dungeon.chest_closed) or
+              tiles.tile_at_location_equals(location, sprites.dungeon.door_closed_north) or
+              tiles.tile_at_location_equals(location, sprites.dungeon.stair_ladder)):
+            tiles.set_wall_at(location, True)
     tileUtil.for_each_tile_in_map(tileUtil.current_tilemap(), on_for_each_tile_in_map)
     
 
-def on_hit_wall2(sprite, location4):
+def on_hit_wall2(sprite, location):
     if characterAnimations.matches_rule(sprite, characterAnimations.rule(Predicate.MOVING_UP)):
         sprite.set_velocity(-30, 0)
     elif characterAnimations.matches_rule(sprite, characterAnimations.rule(Predicate.MOVING_DOWN)):
@@ -103,13 +105,13 @@ def on_hit_wall2(sprite, location4):
 scene.on_hit_wall(SpriteKind.BossSnail, on_hit_wall2)
 
 
-def on_on_overlap3(sprite6, otherSprite3):
+def on_on_overlap3(sprite, otherSprite):
     global Magic
-    music.play(music.melody_playable(music.spooky),
-        music.PlaybackMode.IN_BACKGROUND)
-    sprites.destroy(otherSprite3)
+
+    music.play(music.melody_playable(music.spooky), music.PlaybackMode.IN_BACKGROUND)
+    sprites.destroy(otherSprite)
     if Magic:
-        Magic += -1
+        Magic -= 1
         change_floater(img("""
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -154,11 +156,13 @@ def on_on_overlap3(sprite6, otherSprite3):
             -1)
 sprites.on_overlap(SpriteKind.player, SpriteKind.Ghost, on_on_overlap3)
 
+
 def on_b_pressed():
-    global Magic
+    global Magic, falling
+
     if Magic >= 3 and not (falling):
         Starfire()
-        Magic += -3
+        Magic -= 3
         update_labels()
         
         def on_after():
@@ -564,11 +568,10 @@ def create_wizard():
         200,
         characterAnimations.rule(Predicate.FACING_RIGHT))
     return wiz
+
+
 def change_floater(icon: Image, change: number):
-    if change > 0:
-        textSprite = textsprite.create("+" + str(change))
-    else:
-        textSprite = textsprite.create("" + str(change))
+    textSprite = textsprite.create(('+' if change > 0 else '') + str(change))
     textSprite.set_max_font_height(5)
     textSprite.set_icon(icon)
     textSprite.z = 99
@@ -581,11 +584,11 @@ def change_floater(icon: Image, change: number):
 
 def on_on_overlap4(sprite7, otherSprite4):
     global Keys
-    music.play(music.melody_playable(music.thump),
-        music.PlaybackMode.IN_BACKGROUND)
+
+    music.play(music.melody_playable(music.thump), music.PlaybackMode.IN_BACKGROUND)
     sprites.destroy(otherSprite4)
     if Keys:
-        Keys += -1
+        Keys -= 1
         change_floater(img("""
                 . . . . 5 5 5 5 . . . .
                 . . . 5 e e e e e . . .
@@ -626,16 +629,15 @@ def on_on_overlap4(sprite7, otherSprite4):
             -1)
 sprites.on_overlap(SpriteKind.player, SpriteKind.Monkey, on_on_overlap4)
 
-def on_overlap_tile2(sprite8, location5):
+def on_overlap_tile2(sprite, location):
     global Keys
-    tiles.set_tile_at(location5, assets.tile("""transparency16"""))
+    tiles.set_tile_at(location, assets.tile("""transparency16"""))
     music.play(music.melody_playable(music.power_up),
         music.PlaybackMode.IN_BACKGROUND)
     Keys += 1
     update_labels()
-scene.on_overlap_tile(SpriteKind.player,
-    assets.tile("""myTile"""),
-    on_overlap_tile2)
+scene.on_overlap_tile(SpriteKind.player, assets.tile("""myTile"""), on_overlap_tile2)
+
 
 def create_label(Icon: Image, Y: number):
     label = textsprite.create("x0", 0, 1)
@@ -646,8 +648,10 @@ def create_label(Icon: Image, Y: number):
     label.left = Y
     return label
 
+
 def on_a_pressed():
     global Magic
+
     if Magic and not (falling):
         if characterAnimations.matches_rule(Wizard, characterAnimations.rule(Predicate.MOVING_RIGHT)) or characterAnimations.matches_rule(Wizard,
             characterAnimations.rule(Predicate.NOT_MOVING, Predicate.FACING_RIGHT)):
@@ -742,9 +746,10 @@ def on_a_pressed():
                 0,
                 100)
         projectile.start_effect(effects.trail)
-        Magic += -1
+        Magic -= 1
         update_labels()
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
+
 
 def create_ghost(tile: tiles.Location):
     tiles.set_tile_at(tile, assets.tile("""transparency16"""))
@@ -993,18 +998,21 @@ def create_ghost(tile: tiles.Location):
         200,
         characterAnimations.rule(Predicate.MOVING_DOWN))
 
-def on_on_overlap5(sprite9, otherSprite5):
-    sprites.destroy(sprite9)
-    sprites.destroy(otherSprite5, effects.fire, 100)
+
+def on_on_overlap5(sprite, otherSprite):
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
 sprites.on_overlap(SpriteKind.projectile, SpriteKind.Ghost, on_on_overlap5)
 
-def on_on_overlap6(sprite10, otherSprite6):
-    sprites.destroy(sprite10)
-    sprites.destroy(otherSprite6, effects.fire, 100)
+
+def on_on_overlap6(sprite, otherSprite):
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
 sprites.on_overlap(SpriteKind.projectile, SpriteKind.Bat, on_on_overlap6)
 
-def create_boss(tile2: tiles.Location):
-    tiles.set_tile_at(tile2, assets.tile("""transparency16"""))
+
+def create_boss(tile: tiles.Location):
+    tiles.set_tile_at(tile, assets.tile("""transparency16"""))
     mySprite = sprites.create(img("""
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . c c . . .
@@ -1024,7 +1032,7 @@ def create_boss(tile2: tiles.Location):
             . c c c c c c c c c . . c c c .
             """),
         SpriteKind.BossSnail)
-    tiles.place_on_tile(mySprite, tile2)
+    tiles.place_on_tile(mySprite, tile)
     mySprite.vy = 30
     mySprite.set_scale(2, ScaleAnchor.MIDDLE)
     characterAnimations.loop_frames(mySprite,
@@ -1328,9 +1336,11 @@ def create_boss(tile2: tiles.Location):
         200,
         characterAnimations.rule(Predicate.MOVING_RIGHT))
 
-def on_on_overlap7(sprite11, otherSprite7):
-    sprites.destroy(sprite11)
+
+def on_on_overlap7(sprite, otherSprite):
+    sprites.destroy(sprite)
 sprites.on_overlap(SpriteKind.projectile, SpriteKind.BossSnail, on_on_overlap7)
+
 
 def Starfire():
     projectile = sprites.create_projectile_from_sprite(img("""
@@ -1431,6 +1441,7 @@ def update_labels():
 
 def advance_level():
     global current_level
+
     current_level += 1
     Wizard.set_scale(1, ScaleAnchor.MIDDLE)
     controller.move_sprite(Wizard, 60, 60)
@@ -1438,10 +1449,8 @@ def advance_level():
     render_walls()
 
 
-def create_bat(tile3: tiles.Location):
-    tiles.set_tile_at(tile3, assets.tile("""
-        transparency16
-        """))
+def create_bat(tile: tiles.Location):
+    tiles.set_tile_at(tile, assets.tile("""transparency16"""))
     mySprite = sprites.create(img("""
             . . f f f . . . . . . . . f f f
             . f f c c . . . . . . f c b b c
@@ -1461,7 +1470,7 @@ def create_bat(tile3: tiles.Location):
             . . . f f f f f f f . . . . . .
             """),
         SpriteKind.Bat)
-    tiles.place_on_tile(mySprite, tile3)
+    tiles.place_on_tile(mySprite, tile)
     mySprite.vx = 40
     mySprite.set_flag(SpriteFlag.BOUNCE_ON_WALL, True)
     characterAnimations.loop_frames(mySprite,
@@ -1615,9 +1624,10 @@ def create_bat(tile3: tiles.Location):
         200,
         characterAnimations.rule(Predicate.MOVING_RIGHT))
 
-def on_overlap_tile3(sprite12, location6):
+def on_overlap_tile3(sprite, location):
     global Magic
-    tiles.set_tile_at(location6, assets.tile("""transparency16"""))
+
+    tiles.set_tile_at(location, assets.tile("""transparency16"""))
     music.play(music.melody_playable(music.power_up),
         music.PlaybackMode.IN_BACKGROUND)
     Magic += 1
@@ -1631,20 +1641,21 @@ def on_life_zero():
     game.game_over(False)
 info.on_life_zero(on_life_zero)
 
-def on_overlap_tile4(sprite13, location7):
+def on_overlap_tile4(sprite, location):
     global falling
+
     if not (falling):
         falling = True
-        controller.move_sprite(sprite13, 0, 0)
-        tiles.place_on_tile(sprite13, location7)
+        controller.move_sprite(sprite, 0, 0)
+        tiles.place_on_tile(sprite, location)
         
         def on_after4():
             music.play(music.melody_playable(music.jump_down),
                 music.PlaybackMode.IN_BACKGROUND)
-            sprite13.set_scale(0.75, ScaleAnchor.MIDDLE)
+            sprite.set_scale(0.75, ScaleAnchor.MIDDLE)
             
             def on_after5():
-                sprite13.set_scale(0.5, ScaleAnchor.MIDDLE)
+                sprite.set_scale(0.5, ScaleAnchor.MIDDLE)
                 
                 def on_after6():
                     global falling
@@ -1661,8 +1672,8 @@ scene.on_overlap_tile(SpriteKind.player,
     on_overlap_tile4)
 
 
-def create_monkey(tile4: tiles.Location):
-    tiles.set_tile_at(tile4, assets.tile("""transparency16"""))
+def create_monkey(tile: tiles.Location):
+    tiles.set_tile_at(tile, assets.tile("""transparency16"""))
     mySprite = sprites.create(img("""
             . . . . f f f f f . . . . . . .
             . . . f e e e e e f . . . . . .
@@ -1682,7 +1693,7 @@ def create_monkey(tile4: tiles.Location):
             . . . . f f f f f f f f f . . .
             """),
         SpriteKind.Monkey)
-    tiles.place_on_tile(mySprite, tile4)
+    tiles.place_on_tile(mySprite, tile)
     mySprite.vy = 40
     mySprite.set_flag(SpriteFlag.BOUNCE_ON_WALL, True)
     characterAnimations.loop_frames(mySprite,
@@ -2058,19 +2069,17 @@ def create_monkey(tile4: tiles.Location):
         200,
         characterAnimations.rule(Predicate.MOVING_LEFT))
 
-def on_hit_wall3(sprite14, location8):
-    if tiles.tile_at_location_equals(location8, sprites.dungeon.stair_ladder):
-        tiles.set_tile_at(location8, assets.tile("""transparency16"""))
+def on_hit_wall3(sprite, location):
+    if tiles.tile_at_location_equals(location, sprites.dungeon.stair_ladder):
+        tiles.set_tile_at(location, assets.tile("""transparency16"""))
         music.play(music.melody_playable(music.knock),
             music.PlaybackMode.IN_BACKGROUND)
-        tiles.set_wall_at(location8, False)
+        tiles.set_wall_at(location, False)
 scene.on_hit_wall(SpriteKind.projectile, on_hit_wall3)
 
+
 def init_inventory():
-    global coins, Magic, Keys, key_label, magic_label, coin_label
-    coins = 0
-    Magic = 3
-    Keys = 0
+    global key_label, magic_label, coin_label
     key_label = create_label(img("""
             . . . . 5 5 5 5 . . . .
             . . . 5 e e e e e . . .
@@ -2087,6 +2096,7 @@ def init_inventory():
             """),
         85)
     key_label.z += 100
+
     magic_label = create_label(img("""
             . . . . . 3 3 . . . . .
             . . . . 3 1 1 3 . . . .
@@ -2103,6 +2113,7 @@ def init_inventory():
             """),
         55)
     magic_label.z += 100
+
     coin_label = create_label(img("""
             . . . . . . . . . . . .
             . . . . . . . . . . . .
@@ -2119,13 +2130,14 @@ def init_inventory():
             """),
         115)
     coin_label.z += 100
+
     update_labels()
 
 
 coin_label: TextSprite = None
 key_label: TextSprite = None
 magic_label: TextSprite = None
-Magic = 0
+Magic = 3
 coins = 0
 Keys = 0
 Wizard: Sprite = None
