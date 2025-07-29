@@ -5,12 +5,8 @@ namespace SpriteKind {
     export const Monkey = SpriteKind.create()
 }
 
-scene.onOverlapTile(SpriteKind.Player, assets.tile`
-        myTile0
-        `, function on_overlap_tile(sprite: Sprite, location: tiles.Location) {
-    tiles.setTileAt(location, assets.tile`
-        transparency16
-        `)
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function on_overlap_tile(sprite: Sprite, location: tiles.Location) {
+    tiles.setTileAt(location, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     info.changeLifeBy(1)
 })
@@ -47,9 +43,7 @@ scene.onHitWall(SpriteKind.Player, function on_hit_wall(sprite4: Sprite, locatio
     
     if (tiles.tileAtLocationEquals(location2, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
         Keys += -1
-        tiles.setTileAt(location2, assets.tile`
-            transparency16
-            `)
+        tiles.setTileAt(location2, assets.tile`transparency16`)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
         tiles.setWallAt(location2, false)
         update_labels()
@@ -66,13 +60,9 @@ function render_walls() {
     tileUtil.forEachTileInMap(tileUtil.currentTilemap(), function on_for_each_tile_in_map(column: number, row: number, location3: tiles.Location) {
         if (tiles.tileAtLocationIsWall(location3)) {
             tiles.setTileAt(location3, sprites.builtin.brick)
-        } else if (tiles.tileAtLocationEquals(location3, assets.tile`
-            Stairs down
-            `)) {
+        } else if (tiles.tileAtLocationEquals(location3, assets.tile`Stairs down`)) {
             tiles.placeOnTile(Wizard, location3)
-            tiles.setTileAt(location3, assets.tile`
-                transparency16
-                `)
+            tiles.setTileAt(location3, assets.tile`transparency16`)
         } else if (tiles.tileAtLocationEquals(location3, tileUtil.object4)) {
             create_bat(location3)
         } else if (tiles.tileAtLocationEquals(location3, tileUtil.object6)) {
@@ -105,7 +95,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(s
     music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite3)
     if (Magic) {
-        Magic -= 1
+        Magic += -1
         change_floater(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -153,7 +143,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
     
     if (Magic >= 3 && !falling) {
         Starfire()
-        Magic -= 3
+        Magic += -3
         update_labels()
         timer.after(200, function on_after() {
             Starfire()
@@ -171,23 +161,23 @@ function create_wizard(): Sprite {
     info.setLife(3)
     scene.cameraFollowSprite(wiz)
     characterAnimations.loopFrames(wiz, [img`
-                . . . . . . c c c . . . . . . .
-                . . . . . . c 5 b c . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f f f f f f f f f f . .
-                . . f f f f f f f f f f f f . .
-                . . . f f f f f f f f f f . . .
-                . . . e e f f f f f f f e . . .
-                . . e b f b 5 b b 5 b c b e . .
-                . . e e f 5 5 5 5 5 5 f e e . .
-                . . . . c b 5 5 5 5 b c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
+            . . . . . . c c c . . . . . . .
+            . . . . . . c 5 b c . . . . . .
+            . . . . c c c 5 5 c c c . . . .
+            . . c c c c 5 5 5 5 c b c c . .
+            . c b b 5 b 5 5 5 5 b 5 b b c .
+            . c b 5 5 b b 5 5 b b 5 5 b c .
+            . . c 5 5 5 b b b b 5 5 5 f . .
+            . . f f 5 5 5 5 5 5 5 5 f f . .
+            . . f f f f f f f f f f f f . .
+            . . f f f f f f f f f f f f . .
+            . . . f f f f f f f f f f . . .
+            . . . e e f f f f f f f e . . .
+            . . e b f b 5 b b 5 b c b e . .
+            . . e e f 5 5 5 5 5 5 f e e . .
+            . . . . c b 5 5 5 5 b c . . . .
+            . . . . . f f f f f f . . . . .
+        `, img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . c c . . . . . .
                 . . . . . . . c 5 c . . . . . .
@@ -583,13 +573,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(
     }
     
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`
-        myTile
-        `, function on_overlap_tile2(sprite8: Sprite, location5: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function on_overlap_tile2(sprite8: Sprite, location5: tiles.Location) {
     
-    tiles.setTileAt(location5, assets.tile`
-        transparency16
-        `)
+    tiles.setTileAt(location5, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     Keys += 1
     update_labels()
@@ -693,9 +679,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
     
 })
 function create_ghost(tile: tiles.Location) {
-    tiles.setTileAt(tile, assets.tile`
-        transparency16
-        `)
+    tiles.setTileAt(tile, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
             ........................
             ........................
@@ -938,9 +922,7 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6
     sprites.destroy(otherSprite6, effects.fire, 100)
 })
 function create_boss(tile2: tiles.Location) {
-    tiles.setTileAt(tile2, assets.tile`
-        transparency16
-        `)
+    tiles.setTileAt(tile2, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . c c . . .
@@ -1245,23 +1227,23 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BossSnail, function on_on_ov
 })
 function Starfire() {
     let projectile = sprites.createProjectileFromSprite(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . 2 2 2 2 . . .
-            . . . . . . . 2 2 1 1 1 1 2 . .
-            . . . . 2 2 3 3 1 1 1 1 1 1 . .
-            . . 3 3 3 3 1 1 1 1 1 1 1 1 . .
-            . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
-            . . 3 3 2 2 3 1 1 1 1 1 1 1 . .
-            . . . . . . 2 2 3 1 1 1 1 2 . .
-            . . . . . . . . . 2 2 2 2 . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            `, Wizard, 100, 0)
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . 2 2 2 2 . . .
+        . . . . . . . 2 2 1 1 1 1 2 . .
+        . . . . 2 2 3 3 1 1 1 1 1 1 . .
+        . . 3 3 3 3 1 1 1 1 1 1 1 1 . .
+        . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
+        . . 3 3 2 2 3 1 1 1 1 1 1 1 . .
+        . . . . . . 2 2 3 1 1 1 1 2 . .
+        . . . . . . . . . 2 2 2 2 . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+    `, Wizard, 100, 0)
     projectile.startEffect(effects.trail)
     projectile = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . .
@@ -1502,13 +1484,9 @@ function create_bat(tile3: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingRight))
 }
 
-scene.onOverlapTile(SpriteKind.Player, assets.tile`
-        myTile2
-        `, function on_overlap_tile3(sprite12: Sprite, location6: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function on_overlap_tile3(sprite12: Sprite, location6: tiles.Location) {
     
-    tiles.setTileAt(location6, assets.tile`
-        transparency16
-        `)
+    tiles.setTileAt(location6, assets.tile`transparency16`)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     Magic += 1
     update_labels()
@@ -1539,9 +1517,7 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_o
     
 })
 function create_monkey(tile4: tiles.Location) {
-    tiles.setTileAt(tile4, assets.tile`
-        transparency16
-        `)
+    tiles.setTileAt(tile4, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
             . . . . f f f f f . . . . . . .
             . . . f e e e e e f . . . . . .
@@ -1911,9 +1887,7 @@ function create_monkey(tile4: tiles.Location) {
 
 scene.onHitWall(SpriteKind.Projectile, function on_hit_wall3(sprite14: Sprite, location8: tiles.Location) {
     if (tiles.tileAtLocationEquals(location8, sprites.dungeon.stairLadder)) {
-        tiles.setTileAt(location8, assets.tile`
-            transparency16
-            `)
+        tiles.setTileAt(location8, assets.tile`transparency16`)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
         tiles.setWallAt(location8, false)
     }
@@ -1979,16 +1953,9 @@ let Magic = 0
 let coins = 0
 let Keys = 0
 let Wizard : Sprite = null
-let current_level = 0
 let falling = false
-let levels = [tilemap`
-        level0
-        `, tilemap`
-        level7
-        `, tilemap`
-        level5
-        `]
-current_level = -1
+let current_level = -1
+let levels = [tilemap`level_0`, tilemap`level_1`, tilemap`level_2`]
 game.setGameOverScoringType(game.ScoringType.HighScore)
 init_inventory()
 Wizard = create_wizard()
