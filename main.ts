@@ -88,15 +88,15 @@ function render_walls() {
     })
 }
 
-scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite5: Sprite, location4: tiles.Location) {
-    if (characterAnimations.matchesRule(sprite5, characterAnimations.rule(Predicate.MovingUp))) {
-        sprite5.setVelocity(-30, 0)
-    } else if (characterAnimations.matchesRule(sprite5, characterAnimations.rule(Predicate.MovingDown))) {
-        sprite5.setVelocity(30, 0)
-    } else if (characterAnimations.matchesRule(sprite5, characterAnimations.rule(Predicate.MovingLeft))) {
-        sprite5.setVelocity(0, 30)
-    } else if (characterAnimations.matchesRule(sprite5, characterAnimations.rule(Predicate.MovingRight))) {
-        sprite5.setVelocity(0, -30)
+scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite: Sprite, location4: tiles.Location) {
+    if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
+        sprite.setVelocity(-30, 0)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
+        sprite.setVelocity(30, 0)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingLeft))) {
+        sprite.setVelocity(0, 30)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingRight))) {
+        sprite.setVelocity(0, -30)
     }
     
 })
@@ -105,7 +105,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(s
     music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite3)
     if (Magic) {
-        Magic += -1
+        Magic -= 1
         change_floater(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -1980,11 +1980,8 @@ let coins = 0
 let Keys = 0
 let Wizard : Sprite = null
 let current_level = 0
-let levels : tiles.TileMapData[] = []
 let falling = false
-game.setGameOverScoringType(game.ScoringType.HighScore)
-init_inventory()
-levels = [tilemap`
+let levels = [tilemap`
         level0
         `, tilemap`
         level7
@@ -1992,5 +1989,7 @@ levels = [tilemap`
         level5
         `]
 current_level = -1
+game.setGameOverScoringType(game.ScoringType.HighScore)
+init_inventory()
 Wizard = create_wizard()
 advance_level()
