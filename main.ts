@@ -5,20 +5,88 @@ namespace SpriteKind {
     export const Monkey = SpriteKind.create()
 }
 
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function on_overlap_tile(sprite: Sprite, location: tiles.Location) {
+// Utilities
+
+// Clear tile to transparency
+function clearTile(location: tiles.Location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
+}
+
+// Indicate a chage with floating message.
+function change_floater(icon: Image, change: number) {
+    let textSprite = textsprite.create((change > 0 ? "+" : "") + ("" + change))
+    textSprite.setMaxFontHeight(5)
+    textSprite.setIcon(icon)
+    textSprite.z = 99
+    textSprite.setPosition(wizard.x, wizard.y)
+    timer.after(500, function on_after3() {
+        sprites.destroy(textSprite, effects.disintegrate, 500)
+    })
+}
+
+// Create stat label for top of screen.
+function create_label(Icon: Image, Y: number): TextSprite {
+    let label = textsprite.create("x0", 0, 1)
+    label.setIcon(Icon)
+    label.setOutline(1, 6)
+    label.setFlag(SpriteFlag.RelativeToCamera, true)
+    label.top = 0
+    label.left = Y
+    return label
+}
+
+// Player Overlaps - PICK UP
+
+// Player picjs up LIFE POTION
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function on_overlap_tile(sprite: Sprite, location: tiles.Location) {
+    clearTile(location)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     info.changeLifeBy(1)
 })
+
+// Player picks up KEY
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function on_overlap_tile2(sprite: Sprite, location: tiles.Location) { 
+    clearTile(location)
+    music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
+    Keys += 1
+    update_labels()
+})
+
+// Player Overlaps - INTERACT
+
+// Player tries to unlock door/chest
+scene.onHitWall(SpriteKind.Player, function on_hit_wall(sprite: Sprite, location: tiles.Location) {
+    
+    if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
+        Keys += -1
+        tiles.setTileAt(location, assets.tile`transparency16`)
+        music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+        tiles.setWallAt(location, false)
+        update_labels()
+    } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) && Keys >= 1) {
+        Keys += -1
+        tiles.setTileAt(location, sprites.dungeon.chestOpen)
+        music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+        coins += 10
+        update_labels()
+    }
+    
+})
+
+// Player Overlaps - FIGHT ENEMY
+
+// Player overlaps SNAIL
 sprites.onOverlap(SpriteKind.Player, SpriteKind.BossSnail, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
     music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.InBackground)
     game.setGameOverMessage(false, "Slimed by the boss snail!")
     info.changeLifeBy(-10)
 })
+
+// Player overlaps BAT
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function on_on_overlap2(sprite: Sprite, otherSprite: Sprite) {
     music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite)
-    game.setGameOverMessage(false, "Sucked dry by a vampire bat!")
+    game.setGameOverMessage(false, "Exsanguinated by a vampire!")
     info.changeLifeBy(-1)
     change_floater(img`
             . . . . . . . . . . . . . . . .
@@ -39,63 +107,13 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function on_on_overlap2(spr
             . . . . . . . . . . . . . . . .
             `, -1)
 })
-scene.onHitWall(SpriteKind.Player, function on_hit_wall(sprite: Sprite, location: tiles.Location) {
-    
-    if (tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) && Keys >= 1) {
-        Keys += -1
-        tiles.setTileAt(location, assets.tile`transparency16`)
-        music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
-        tiles.setWallAt(location, false)
-        update_labels()
-    } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) && Keys >= 1) {
-        Keys += -1
-        tiles.setTileAt(location, sprites.dungeon.chestOpen)
-        music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
-        coins += 10
-        update_labels()
-    }
-    
-})
-function render_walls() {
-    tileUtil.forEachTileInMap(tileUtil.currentTilemap(), function on_for_each_tile_in_map(column: number, row: number, location: tiles.Location) {
-        if (tiles.tileAtLocationIsWall(location)) {
-            tiles.setTileAt(location, sprites.builtin.brick)
-        } else if (tiles.tileAtLocationEquals(location, assets.tile`Stairs down`)) {
-            tiles.placeOnTile(Wizard, location)
-            tiles.setTileAt(location, assets.tile`transparency16`)
-        } else if (tiles.tileAtLocationEquals(location, tileUtil.object4)) {
-            create_bat(location)
-        } else if (tiles.tileAtLocationEquals(location, tileUtil.object6)) {
-            create_ghost(location)
-        } else if (tiles.tileAtLocationEquals(location, tileUtil.object12)) {
-            create_monkey(location)
-        } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
-            create_boss(location)
-        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) || tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) || tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
-            tiles.setWallAt(location, true)
-        }
-        
-    })
-}
 
-scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite: Sprite, location: tiles.Location) {
-    if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
-        sprite.setVelocity(-30, 0)
-    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
-        sprite.setVelocity(30, 0)
-    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingLeft))) {
-        sprite.setVelocity(0, 30)
-    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingRight))) {
-        sprite.setVelocity(0, -30)
-    }
-    
-})
+// Player overlaps GHOST
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(sprite: Sprite, otherSprite: Sprite) {
-    
     music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite)
-    if (Magic) {
-        Magic -= 1
+    if (mana) {
+        mana -= 1
         change_floater(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -139,21 +157,57 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(s
     }
     
 })
-controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
+
+// Player overlaps MONKEY
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(sprite7: Sprite, otherSprite4: Sprite) {
     
-    if (Magic >= 3 && !falling) {
-        Starfire()
-        Magic -= 3
+    music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
+    sprites.destroy(otherSprite4)
+    if (Keys) {
+        Keys -= 1
+        change_floater(img`
+                . . . . 5 5 5 5 . . . .
+                . . . 5 e e e e e . . .
+                . . . 5 e c c e e . . .
+                . . . 5 e c c e e . . .
+                . . . 5 e c c 5 e . . .
+                . . . 5 e e 5 e e . . .
+                . . . . e e e e . . . .
+                . . . . . 5 e . . . . .
+                . . . . . 5 e . . . . .
+                . . . . . 5 e 5 5 . . .
+                . . . . . 5 e e e . . .
+                . . . . . 5 e 5 . . . .
+                `, -1)
         update_labels()
-        timer.after(200, function on_after() {
-            Starfire()
-            timer.after(200, function on_after2() {
-                Starfire()
-            })
-        })
+    } else {
+        game.setGameOverMessage(false, "Eyes gouged by evil monkey!")
+        info.changeLifeBy(-1)
+        change_floater(img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . f f f . f f f . . . .
+                . . . . f 3 3 3 f 3 3 3 f . . .
+                . . . . f 3 3 3 3 3 1 3 f . . .
+                . . . . f 3 3 3 3 3 3 3 f . . .
+                . . . . . f 3 b b b 3 f . . . .
+                . . . . . f f b b b f f . . . .
+                . . . . . . f f b f f . . . . .
+                . . . . . . . f f f . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                `, -1)
     }
     
 })
+
+// Initialisation
+
+// Creat player sprite.
 function create_wizard(): Sprite {
     let wiz = sprites.create(assets.image`
         Wiz
@@ -511,169 +565,266 @@ function create_wizard(): Sprite {
     return wiz
 }
 
-function change_floater(icon: Image, change: number) {
-    let textSprite = textsprite.create((change > 0 ? "+" : "") + ("" + change))
-    textSprite.setMaxFontHeight(5)
-    textSprite.setIcon(icon)
-    textSprite.z = 99
-    textSprite.setPosition(Wizard.x, Wizard.y)
-    timer.after(500, function on_after3() {
-        sprites.destroy(textSprite, effects.disintegrate, 500)
+// Render the level tiles, add player and creatues.
+function render_walls() {
+    tileUtil.forEachTileInMap(tileUtil.currentTilemap(), function on_for_each_tile_in_map(column: number, row: number, location: tiles.Location) {
+        if (tiles.tileAtLocationIsWall(location)) {
+            tiles.setTileAt(location, sprites.builtin.brick)
+        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLarge)) {
+            tiles.placeOnTile(wizard, location)
+            clearTile(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object4)) {
+            create_bat(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object6)) {
+            create_ghost(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object12)) {
+            create_monkey(location)
+        } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
+            create_boss(location)
+        } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) ||
+                tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) ||
+                tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
+            tiles.setWallAt(location, true)
+        }
+        
     })
 }
 
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(sprite7: Sprite, otherSprite4: Sprite) {
+// Enemy interactions
+
+scene.onHitWall(SpriteKind.BossSnail, function on_hit_wall2(sprite: Sprite, location: tiles.Location) {
+    if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
+        sprite.setVelocity(-30, 0)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
+        sprite.setVelocity(30, 0)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingLeft))) {
+        sprite.setVelocity(0, 30)
+    } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingRight))) {
+        sprite.setVelocity(0, -30)
+    }
+})
+
+// Casting spells
+
+// Cast starfire pulses
+controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
+    if (mana < STARFIRE_COST || falling) return
+
+    mana -= STARFIRE_COST
+    update_labels()
+
+    Starfire()
+
+    timer.after(200, function on_after() {
+        Starfire()
+        timer.after(200, function on_after2() {
+            Starfire()
+        })
+    })
+
     
-    music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
-    sprites.destroy(otherSprite4)
-    if (Keys) {
-        Keys -= 1
-        change_floater(img`
-                . . . . 5 5 5 5 . . . .
-                . . . 5 e e e e e . . .
-                . . . 5 e c c e e . . .
-                . . . 5 e c c e e . . .
-                . . . 5 e c c 5 e . . .
-                . . . 5 e e 5 e e . . .
-                . . . . e e e e . . . .
-                . . . . . 5 e . . . . .
-                . . . . . 5 e . . . . .
-                . . . . . 5 e 5 5 . . .
-                . . . . . 5 e e e . . .
-                . . . . . 5 e 5 . . . .
-                `, -1)
-        update_labels()
-    } else {
-        game.setGameOverMessage(false, "Eyes gouged by evil monkey!")
-        info.changeLifeBy(-1)
-        change_floater(img`
+})
+
+// Cast fireball
+controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
+    let projectile: Sprite
+
+    if (mana < FIREBALL_COST || falling) return
+    
+    mana -= FIREBALL_COST
+    update_labels()
+
+    if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingRight)) ||
+            characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingRight))) {
+        projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . f f f . f f f . . . .
-                . . . . f 3 3 3 f 3 3 3 f . . .
-                . . . . f 3 3 3 3 3 1 3 f . . .
-                . . . . f 3 3 3 3 3 3 3 f . . .
-                . . . . . f 3 b b b 3 f . . . .
-                . . . . . f f b b b f f . . . .
-                . . . . . . f f b f f . . . . .
-                . . . . . . . f f f . . . . . .
-                . . . . . . . . . . . . . . . .
+                . . . . . . . . . 2 2 2 2 . . .
+                . . . . . . . 2 2 1 1 1 1 2 . .
+                . . . . 2 2 3 3 1 1 1 1 1 1 . .
+                . . 3 3 3 3 1 1 1 1 1 1 1 1 . .
+                . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
+                . . 3 3 2 2 3 1 1 1 1 1 1 1 . .
+                . . . . . . 2 2 3 1 1 1 1 2 . .
+                . . . . . . . . . 2 2 2 2 . . .
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
-                `, -1)
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                `, wizard, 100, 0)
+    } else if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingLeft)) ||
+            characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingLeft))) {
+        projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . 2 2 2 2 . . . . . . . . .
+                . . 2 1 1 1 1 2 2 . . . . . . .
+                . . 1 1 1 1 1 1 3 3 2 2 . . . .
+                . . 1 1 1 1 1 1 1 1 3 3 3 3 . .
+                . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
+                . . 1 1 1 1 1 1 1 3 2 2 3 3 . .
+                . . 2 1 1 1 1 3 2 2 . . . . . .
+                . . . 2 2 2 2 . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                `, wizard, -100, 0)
+    } else if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingUp)) ||
+            characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingUp))) {
+        projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . 2 1 1 1 1 2 . . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . . 3 1 1 1 1 2 . . . . .
+                . . . . . 2 1 1 1 3 2 . . . . .
+                . . . . . 2 3 1 1 3 . . . . . .
+                . . . . . . 2 1 3 2 . . . . . .
+                . . . . . . 2 1 3 2 . . . . . .
+                . . . . . . 3 1 3 . . . . . . .
+                . . . . . . 3 1 3 . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                `, wizard, 0, -100)
+    } else if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingDown)) ||
+            characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingDown))) {
+        projectile = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . 3 1 3 . . . . . . .
+                . . . . . . 3 1 3 . . . . . . .
+                . . . . . . 2 1 3 2 . . . . . .
+                . . . . . . 2 1 3 2 . . . . . .
+                . . . . . 2 3 1 1 3 . . . . . .
+                . . . . . 2 1 1 1 3 2 . . . . .
+                . . . . . 3 1 1 1 1 2 . . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . 2 1 1 1 1 1 1 2 . . . .
+                . . . . . 2 1 1 1 1 2 . . . . .
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . . . . . .
+                `, wizard, 0, 100)
     }
     
+    projectile.startEffect(effects.trail)
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function on_overlap_tile2(sprite: Sprite, location: tiles.Location) {
-    
-    tiles.setTileAt(location, assets.tile`transparency16`)
-    music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
-    Keys += 1
-    update_labels()
-})
-function create_label(Icon: Image, Y: number): TextSprite {
-    let label = textsprite.create("x0", 0, 1)
-    label.setIcon(Icon)
-    label.setOutline(1, 6)
-    label.setFlag(SpriteFlag.RelativeToCamera, true)
-    label.top = 0
-    label.left = Y
-    return label
+
+function Starfire() {
+    let projectile = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . 2 2 2 2 . . .
+        . . . . . . . 2 2 1 1 1 1 2 . .
+        . . . . 2 2 3 3 1 1 1 1 1 1 . .
+        . . 3 3 3 3 1 1 1 1 1 1 1 1 . .
+        . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
+        . . 3 3 2 2 3 1 1 1 1 1 1 1 . .
+        . . . . . . 2 2 3 1 1 1 1 2 . .
+        . . . . . . . . . 2 2 2 2 . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+    `, wizard, 100, 0)
+    projectile.startEffect(effects.trail)
+
+    projectile = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . 2 2 2 2 . . . . . . . . .
+            . . 2 1 1 1 1 2 2 . . . . . . .
+            . . 1 1 1 1 1 1 3 3 2 2 . . . .
+            . . 1 1 1 1 1 1 1 1 3 3 3 3 . .
+            . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
+            . . 1 1 1 1 1 1 1 3 2 2 3 3 . .
+            . . 2 1 1 1 1 3 2 2 . . . . . .
+            . . . 2 2 2 2 . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            `, wizard, -100, 0)
+    projectile.startEffect(effects.trail)
+
+    projectile = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . 2 1 1 1 1 2 . . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . . 3 1 1 1 1 2 . . . . .
+            . . . . . 2 1 1 1 3 2 . . . . .
+            . . . . . 2 3 1 1 3 . . . . . .
+            . . . . . . 2 1 3 2 . . . . . .
+            . . . . . . 2 1 3 2 . . . . . .
+            . . . . . . 3 1 3 . . . . . . .
+            . . . . . . 3 1 3 . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            `, wizard, 0, -100)
+    projectile.startEffect(effects.trail)
+
+    projectile = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . 3 1 3 . . . . . . .
+            . . . . . . 3 1 3 . . . . . . .
+            . . . . . . 2 1 3 2 . . . . . .
+            . . . . . . 2 1 3 2 . . . . . .
+            . . . . . 2 3 1 1 3 . . . . . .
+            . . . . . 2 1 1 1 3 2 . . . . .
+            . . . . . 3 1 1 1 1 2 . . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . 2 1 1 1 1 1 1 2 . . . .
+            . . . . . 2 1 1 1 1 2 . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            `, wizard, 0, 100)
+    projectile.startEffect(effects.trail)
 }
 
-controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
-    let projectile: Sprite;
-    
-    if (Magic && !falling) {
-        if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingRight)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingRight))) {
-            projectile = sprites.createProjectileFromSprite(img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . 2 2 2 2 . . .
-                    . . . . . . . 2 2 1 1 1 1 2 . .
-                    . . . . 2 2 3 3 1 1 1 1 1 1 . .
-                    . . 3 3 3 3 1 1 1 1 1 1 1 1 . .
-                    . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
-                    . . 3 3 2 2 3 1 1 1 1 1 1 1 . .
-                    . . . . . . 2 2 3 1 1 1 1 2 . .
-                    . . . . . . . . . 2 2 2 2 . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    `, Wizard, 100, 0)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingLeft)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingLeft))) {
-            projectile = sprites.createProjectileFromSprite(img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . 2 2 2 2 . . . . . . . . .
-                    . . 2 1 1 1 1 2 2 . . . . . . .
-                    . . 1 1 1 1 1 1 3 3 2 2 . . . .
-                    . . 1 1 1 1 1 1 1 1 3 3 3 3 . .
-                    . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
-                    . . 1 1 1 1 1 1 1 3 2 2 3 3 . .
-                    . . 2 1 1 1 1 3 2 2 . . . . . .
-                    . . . 2 2 2 2 . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    `, Wizard, -100, 0)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingUp)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingUp))) {
-            projectile = sprites.createProjectileFromSprite(img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . 2 1 1 1 1 2 . . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . . 3 1 1 1 1 2 . . . . .
-                    . . . . . 2 1 1 1 3 2 . . . . .
-                    . . . . . 2 3 1 1 3 . . . . . .
-                    . . . . . . 2 1 3 2 . . . . . .
-                    . . . . . . 2 1 3 2 . . . . . .
-                    . . . . . . 3 1 3 . . . . . . .
-                    . . . . . . 3 1 3 . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    `, Wizard, 0, -100)
-        } else if (characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.MovingDown)) || characterAnimations.matchesRule(Wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingDown))) {
-            projectile = sprites.createProjectileFromSprite(img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . 3 1 3 . . . . . . .
-                    . . . . . . 3 1 3 . . . . . . .
-                    . . . . . . 2 1 3 2 . . . . . .
-                    . . . . . . 2 1 3 2 . . . . . .
-                    . . . . . 2 3 1 1 3 . . . . . .
-                    . . . . . 2 1 1 1 3 2 . . . . .
-                    . . . . . 3 1 1 1 1 2 . . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . 2 1 1 1 1 1 1 2 . . . .
-                    . . . . . 2 1 1 1 1 2 . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    `, Wizard, 0, 100)
-        }
-        
-        projectile.startEffect(effects.trail)
-        Magic -= 1
-        update_labels()
-    }
-    
+// Spell effects
+
+// Fireball hits GHOST
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, function on_on_overlap5(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
 })
+
+// Fireball hits BAT
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.fire, 100)
+})
+
+// Fireball hits SNAIL
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BossSnail, function on_on_overlap7(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(sprite)
+})
+
+// Creating enemies
+
+// GHOST
 function create_ghost(tile: tiles.Location) {
-    tiles.setTileAt(tile, assets.tile`transparency16`)
+    clearTile(tile)
     let mySprite = sprites.create(img`
             ........................
             ........................
@@ -907,16 +1058,9 @@ function create_ghost(tile: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingDown))
 }
 
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, function on_on_overlap5(sprite: Sprite, otherSprite: Sprite) {
-    sprites.destroy(sprite)
-    sprites.destroy(otherSprite, effects.fire, 100)
-})
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6(sprite: Sprite, otherSprite: Sprite) {
-    sprites.destroy(sprite)
-    sprites.destroy(otherSprite, effects.fire, 100)
-})
+// BOSS
 function create_boss(tile: tiles.Location) {
-    tiles.setTileAt(tile, assets.tile`transparency16`)
+    clearTile(tile)
     let mySprite = sprites.create(img`
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . c c . . .
@@ -1216,105 +1360,10 @@ function create_boss(tile: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingRight))
 }
 
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BossSnail, function on_on_overlap7(sprite: Sprite, otherSprite: Sprite) {
-    sprites.destroy(sprite)
-})
-function Starfire() {
-    let projectile = sprites.createProjectileFromSprite(img`
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . 2 2 2 2 . . .
-        . . . . . . . 2 2 1 1 1 1 2 . .
-        . . . . 2 2 3 3 1 1 1 1 1 1 . .
-        . . 3 3 3 3 1 1 1 1 1 1 1 1 . .
-        . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
-        . . 3 3 2 2 3 1 1 1 1 1 1 1 . .
-        . . . . . . 2 2 3 1 1 1 1 2 . .
-        . . . . . . . . . 2 2 2 2 . . .
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . .
-    `, Wizard, 100, 0)
-    projectile.startEffect(effects.trail)
-    projectile = sprites.createProjectileFromSprite(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . 2 2 2 2 . . . . . . . . .
-            . . 2 1 1 1 1 2 2 . . . . . . .
-            . . 1 1 1 1 1 1 3 3 2 2 . . . .
-            . . 1 1 1 1 1 1 1 1 3 3 3 3 . .
-            . . 1 1 1 1 1 1 1 1 1 1 1 1 . .
-            . . 1 1 1 1 1 1 1 3 2 2 3 3 . .
-            . . 2 1 1 1 1 3 2 2 . . . . . .
-            . . . 2 2 2 2 . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            `, Wizard, -100, 0)
-    projectile.startEffect(effects.trail)
-    projectile = sprites.createProjectileFromSprite(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . 2 1 1 1 1 2 . . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . . 3 1 1 1 1 2 . . . . .
-            . . . . . 2 1 1 1 3 2 . . . . .
-            . . . . . 2 3 1 1 3 . . . . . .
-            . . . . . . 2 1 3 2 . . . . . .
-            . . . . . . 2 1 3 2 . . . . . .
-            . . . . . . 3 1 3 . . . . . . .
-            . . . . . . 3 1 3 . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            `, Wizard, 0, -100)
-    projectile.startEffect(effects.trail)
-    projectile = sprites.createProjectileFromSprite(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . 3 1 3 . . . . . . .
-            . . . . . . 3 1 3 . . . . . . .
-            . . . . . . 2 1 3 2 . . . . . .
-            . . . . . . 2 1 3 2 . . . . . .
-            . . . . . 2 3 1 1 3 . . . . . .
-            . . . . . 2 1 1 1 3 2 . . . . .
-            . . . . . 3 1 1 1 1 2 . . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . 2 1 1 1 1 1 1 2 . . . .
-            . . . . . 2 1 1 1 1 2 . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            `, Wizard, 0, 100)
-    projectile.startEffect(effects.trail)
-}
-
-function update_labels() {
-    magic_label.setText("x" + ("" + Magic))
-    key_label.setText("x" + ("" + Keys))
-    coin_label.setText("x" + ("" + coins))
-}
-
-function advance_level() {
-    
-    current_level += 1
-    Wizard.setScale(1, ScaleAnchor.Middle)
-    controller.moveSprite(Wizard, 60, 60)
-    tiles.setCurrentTilemap(levels[current_level])
-    render_walls()
-}
-
+// BAT
 function create_bat(tile: tiles.Location) {
-    tiles.setTileAt(tile, assets.tile`transparency16`)
+    clearTile(tile)
+
     let mySprite = sprites.create(img`
             . . f f f . . . . . . . . f f f
             . f f c c . . . . . . f c b b c
@@ -1476,38 +1525,7 @@ function create_bat(tile: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingRight))
 }
 
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function on_overlap_tile3(sprite: Sprite, location: tiles.Location) {
-    
-    tiles.setTileAt(location, assets.tile`transparency16`)
-    music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
-    Magic += 1
-    update_labels()
-})
-info.onLifeZero(function on_life_zero() {
-    info.setScore(coins)
-    game.gameOver(false)
-})
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_overlap_tile4(sprite: Sprite, location: tiles.Location) {
-    
-    if (!falling) {
-        falling = true
-        controller.moveSprite(sprite, 0, 0)
-        tiles.placeOnTile(sprite, location)
-        timer.after(250, function on_after4() {
-            music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.InBackground)
-            sprite.setScale(0.75, ScaleAnchor.Middle)
-            timer.after(500, function on_after5() {
-                sprite.setScale(0.5, ScaleAnchor.Middle)
-                timer.after(500, function on_after6() {
-                    
-                    advance_level()
-                    falling = false
-                })
-            })
-        })
-    }
-    
-})
+// MONKEY
 function create_monkey(tile: tiles.Location) {
     tiles.setTileAt(tile, assets.tile`transparency16`)
     let mySprite = sprites.create(img`
@@ -1877,6 +1895,56 @@ function create_monkey(tile: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingLeft))
 }
 
+
+
+function update_labels() {
+    magic_label.setText(`x${mana}`)
+    key_label.setText(`x${Keys}`)
+    coin_label.setText(`x${coins}`)
+}
+
+function advance_level() {
+    current_level += 1
+    wizard.setScale(1, ScaleAnchor.Middle)
+    controller.moveSprite(wizard, 60, 60)
+    tiles.setCurrentTilemap(levels[current_level])
+    render_walls()
+}
+
+
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function on_overlap_tile3(sprite: Sprite, location: tiles.Location) {
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
+    mana += 1
+    update_labels()
+})
+
+info.onLifeZero(function on_life_zero() {
+    info.setScore(coins)
+    game.gameOver(false)
+})
+
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_overlap_tile4(sprite: Sprite, location: tiles.Location) {
+    if (!falling) {
+        falling = true
+        controller.moveSprite(sprite, 0, 0)
+        tiles.placeOnTile(sprite, location)
+        timer.after(250, function on_after4() {
+            music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.InBackground)
+            sprite.setScale(0.75, ScaleAnchor.Middle)
+            timer.after(500, function on_after5() {
+                sprite.setScale(0.5, ScaleAnchor.Middle)
+                timer.after(500, function on_after6() {
+                    
+                    advance_level()
+                    falling = false
+                })
+            })
+        })
+    }
+    
+})
+
 scene.onHitWall(SpriteKind.Projectile, function on_hit_wall3(sprite: Sprite, location: tiles.Location) {
     if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
         tiles.setTileAt(location, assets.tile`transparency16`)
@@ -1885,8 +1953,8 @@ scene.onHitWall(SpriteKind.Projectile, function on_hit_wall3(sprite: Sprite, loc
     }
     
 })
+
 function init_inventory() {
-    
     key_label = create_label(img`
             . . . . 5 5 5 5 . . . .
             . . . 5 e e e e e . . .
@@ -1902,6 +1970,7 @@ function init_inventory() {
             . . . . . 5 e 5 . . . .
             `, 85)
     key_label.z += 100
+
     magic_label = create_label(img`
             . . . . . 3 3 . . . . .
             . . . . 3 1 1 3 . . . .
@@ -1917,6 +1986,7 @@ function init_inventory() {
             . . . . . . . . . . . .
             `, 55)
     magic_label.z += 100
+
     coin_label = create_label(img`
             . . . . . . . . . . . .
             . . . . . . . . . . . .
@@ -1932,20 +2002,29 @@ function init_inventory() {
             . . . . . . . . . . . .
             `, 115)
     coin_label.z += 100
+
     update_labels()
 }
+
+
+const INITIAL_MANA = 3
+const MAX_MANA = 3
+const INITIAL_LIVES = 3
+const FIREBALL_COST = 1
+const STARFIRE_COST = 3
 
 let coin_label : TextSprite = null
 let key_label : TextSprite = null
 let magic_label : TextSprite = null
-let Magic = 3
+let mana = INITIAL_MANA
 let coins = 0
 let Keys = 0
-let Wizard : Sprite = null
 let falling = false
 let current_level = -1
-let levels = [tilemap`level_0`, tilemap`level_1`, tilemap`level_2`]
+
+const levels = [tilemap`level_0`, tilemap`level_1`, tilemap`level_2`]
+const wizard : Sprite = create_wizard()
+
 game.setGameOverScoringType(game.ScoringType.HighScore)
 init_inventory()
-Wizard = create_wizard()
 advance_level()
