@@ -22,25 +22,6 @@ namespace myImages {
 . . . . c b 5 5 5 5 b c . . . . 
 . . . . . f f f f f f . . . . . 
 `;
-            case "image1":
-            case "Gold":return img`
-. . . . 5 5 5 5 5 5 5 . . . . . 
-. . 5 5 5 5 5 5 5 5 5 5 5 . . . 
-. 5 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-. 5 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-. 5 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-. 5 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-. . 5 5 5 5 5 5 5 5 5 5 5 . . . 
-. . . . 5 5 5 5 5 5 5 . . . . . 
-. . . . . . . . . . . . . . . . 
-`;
         }
         return null;
     })
@@ -58,6 +39,12 @@ namespace myImages {
         }
         return null;
     })
+
+}
+// Auto-generated code. Do not edit.
+
+// Auto-generated code. Do not edit.
+namespace myTiles {
 
 }
 // Auto-generated code. Do not edit.
