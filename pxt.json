@@ -10,15 +10,13 @@
         "arcade-character-animations": "github:microsoft/arcade-character-animations#v0.0.2"
     },
     "files": [
-        "main.blocks",
         "main.ts",
         "README.md",
         "assets.json",
         "tilemap.g.jres",
         "tilemap.g.ts",
         "images.g.jres",
-        "images.g.ts",
-        "main.py"
+        "images.g.ts"
     ],
     "testFiles": [
         "test.ts"
